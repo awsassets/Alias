@@ -40,32 +40,11 @@ public partial class Processor
 
                 var referenceModule = ReadModule(reference, assemblyResolver);
                 var module = referenceModule.module;
-                module.Name += "_Alias";
-                var name = module.Assembly.Name;
-                name.Name +="_Alias";
-                //var nameDefinition = new AssemblyNameDefinition($"{name.Name}_Alias", name.Version)
-                //{
-                    
-                //   // Attributes = name.Attributes,
-                //    //HasPublicKey = name.HasPublicKey,
-                //    //IsRetargetable = name.IsRetargetable,
-                //    //Culture = name.Culture,
-                //    //Hash = name.Hash,
-                //    //IsSideBySideCompatible = name.IsSideBySideCompatible,
-                //   // HashAlgorithm = name.HashAlgorithm,
-                //    //IsWindowsRuntime = name.IsWindowsRuntime,
-                //    //MetadataToken = name.MetadataToken
-                    
-                //};
-                // if (PublicKey != null)
-                {
-                    //name.PublicKey = PublicKey;
-                    //name.HasPublicKey = true;
-                    //name.PublicKeyToken = null;
-                }
 
+                var name = new AssemblyNameDefinition($"{module.Assembly.Name.Name}_Alias", module.Assembly.Name.Version);
+                name.PublicKey = this.PublicKey;
+                module.Assembly.Name = name;
                 referenceModules.Add(new(module, name));
-              //  module.Assembly.Name = name;
             }
 
             Redirect(ModuleDefinition, referenceModules);

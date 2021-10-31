@@ -1,14 +1,48 @@
 ﻿using System;
+using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
 
-public abstract class BasicTests : BaseTest
+public class Tests
 {
+    static WeavingResult weavingResult;
+
+    static Tests()
+    {
+        weavingResult = WeavingHelper.CreateIsolatedAssemblyCopy(
+            "AssemblyToProcess",
+            new() { "AssemblyToReference" },
+            new[]
+            {
+                "AssemblyToReference.dll",
+                "de\\AssemblyToReference.resources.dll",
+                "fr\\AssemblyToReference.resources.dll"
+            },
+            "Culture");
+    }
+
+    [Fact]
+    public void UsingResource()
+    {
+        var culture = Thread.CurrentThread.CurrentUICulture;
+        try
+        {
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture("fr-FR");
+            var instance1 = weavingResult.GetInstance("ClassToTest");
+            Assert.Equal("Salut", instance1.InternationalFoo());
+        }
+        finally
+        {
+            Thread.CurrentThread.CurrentUICulture = culture;
+        }
+    }
+
     [Fact]
     public void Simple()
     {
-        var instance = WeavingResult.GetInstance("ClassToTest");
+        var instance = weavingResult.GetInstance("ClassToTest");
         Assert.Equal("Hello", instance.Simple());
     }
 
@@ -17,7 +51,7 @@ public abstract class BasicTests : BaseTest
     {
         try
         {
-            var instance = WeavingResult.GetInstance("ClassToTest");
+            var instance = weavingResult.GetInstance("ClassToTest");
             instance.ThrowException();
         }
         catch (Exception exception)
@@ -29,13 +63,9 @@ public abstract class BasicTests : BaseTest
     [Fact]
     public void TypeReferencedWithPartialAssemblyNameIsLoadedFromExistingAssemblyInstance()
     {
-        var instance = WeavingResult.GetInstance("ClassToTest");
+        var instance = weavingResult.GetInstance("ClassToTest");
         var assemblyLoadedByCompileTimeReference = instance.GetReferencedAssembly();
         var typeName = "ClassToReference, AssemblyToReference";
-        if (WeavingResult.Assembly.GetName().Name!.EndsWith("35"))
-        {
-            typeName += "35";
-        }
         var typeLoadedWithPartialAssemblyName = Type.GetType(typeName);
         Assert.NotNull(typeLoadedWithPartialAssemblyName);
 
@@ -45,7 +75,7 @@ public abstract class BasicTests : BaseTest
     [Fact]
     public Task TemplateHasCorrectSymbols()
     {
-        var text = Ildasm.DecompileAssemblyLoader(WeavingResult.AssemblyPath);
+        var text = Ildasm.DecompileAssemblyLoader(weavingResult.AssemblyPath);
         return Verifier.Verify(text).UniqueForAssemblyConfiguration().UniqueForRuntime();
     }
 }
