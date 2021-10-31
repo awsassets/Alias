@@ -47,6 +47,6 @@ public partial class Processor
     string GetWeavingInfoClassName()
     {
         var classPrefix = ModuleDefinition.Assembly.Name.Name.Replace(".", "");
-        return $"{classPrefix}_ProcessedByAssemblyPack";
+        return $"{classPrefix}_ProcessedByAlias";
     }
 }

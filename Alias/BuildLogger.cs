@@ -12,23 +12,23 @@ public class BuildLogger :
 
     public virtual void LogDebug(string message)
     {
-        buildEngine.LogMessageEvent(new(message, "", "AssemblyPack", MessageImportance.Low));
+        buildEngine.LogMessageEvent(new(message, "", "Alias", MessageImportance.Low));
     }
 
     public virtual void LogInfo(string message)
     {
-        buildEngine.LogMessageEvent(new(message, "", "AssemblyPack", MessageImportance.Normal));
+        buildEngine.LogMessageEvent(new(message, "", "Alias", MessageImportance.Normal));
     }
 
     public virtual void LogWarning(string message)
     {
-        buildEngine.LogWarningEvent(new("", "", null, 0, 0, 0, 0, message, "", "AssemblyPack"));
+        buildEngine.LogWarningEvent(new("", "", null, 0, 0, 0, 0, message, "", "Alias"));
     }
 
     public virtual void LogError(string message)
     {
         ErrorOccurred = true;
-        buildEngine.LogErrorEvent(new("", "", null, 0, 0, 0, 0, message, "", "AssemblyPack"));
+        buildEngine.LogErrorEvent(new("", "", null, 0, 0, 0, 0, message, "", "Alias"));
     }
 
     public bool ErrorOccurred { get; private set; }

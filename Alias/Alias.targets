@@ -1,32 +1,32 @@
 ﻿<Project>
   <PropertyGroup>
-    <AssemblyPackPath >$(MSBuildThisFileDirectory)..\</AssemblyPackPath>
-	<AssemblyPackDirectory Condition="$(MSBuildRuntimeType) == 'Core'">$(AssemblyPackPath)netstandardtask</AssemblyPackDirectory>
-	<AssemblyPackDirectory Condition="$(MSBuildRuntimeType) != 'Core'">$(AssemblyPackPath)netclassictask</AssemblyPackDirectory>
-    <AssemblyPackAssembly>$(AssemblyPackDirectory)\AssemblyPack.dll</AssemblyPackAssembly>
+    <AliasPath >$(MSBuildThisFileDirectory)..\</AliasPath>
+	  <AliasDirectory Condition="$(MSBuildRuntimeType) == 'Core'">$(AliasPath)netstandardtask</AliasDirectory>
+	  <AliasDirectory Condition="$(MSBuildRuntimeType) != 'Core'">$(AliasPath)netclassictask</AliasDirectory>
+    <AliasAssembly>$(AliasDirectory)\Alias.dll</AliasAssembly>
     <MsBuildMajorVersion>15</MsBuildMajorVersion>
     <MsBuildMajorVersion Condition="'$(MSBuildVersion)' != ''">$([System.Version]::Parse($(MSBuildVersion)).Major)</MsBuildMajorVersion>
   </PropertyGroup>
 
   <!-- Support for NCrunch -->
   <ItemGroup Condition="'$(NCrunch)' == '1' and '$(TargetFramework)' == '' and '$(TargetFrameworks)' == ''">
-    <None Include="$(AssemblyPackDirectory)\*.*" />
+    <None Include="$(AliasDirectory)\*.*" />
   </ItemGroup>
 
-  <UsingTask TaskName="AssemblyPack.PackTask" AssemblyFile="$(AssemblyPackAssembly)" />
+  <UsingTask TaskName="Alias.PackTask" AssemblyFile="$(AliasAssembly)" />
 
   <Target
-      Name="AssemblyPackTarget"
+      Name="AliasTarget"
       AfterTargets="AfterCompile"
-      Condition="Exists(@(IntermediateAssembly)) And ($(DesignTimeBuild) != true Or $(BuildingForLiveUnitTesting) == true) And $(DisableAssemblyPack) != true"
-      DependsOnTargets="$(AssemblyPackDependsOnTargets)"
+      Condition="Exists(@(IntermediateAssembly)) And ($(DesignTimeBuild) != true Or $(BuildingForLiveUnitTesting) == true) And $(DisableAlias) != true"
+      DependsOnTargets="$(AliasDependsOnTargets)"
       Inputs="@(IntermediateAssembly)"
       Outputs="$(IntermediateOutputPath)">
 
     <Error Condition="($(MsBuildMajorVersion) &lt; 16)"
-           Text="AssemblyPack is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)." />
+           Text="Alias is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)." />
     
-      <AssemblyPack.PackTask
+      <Alias.AliasTask
         AssemblyFile="@(IntermediateAssembly)"
         IntermediateDirectory="$(ProjectDir)$(IntermediateOutputPath)"
         KeyOriginatorFile="$(KeyOriginatorFile)"
@@ -35,10 +35,10 @@
         References="@(ReferencePath)"
         SignAssembly="$(SignAssembly)"
         DelaySign="$(DelaySign)"
-        PackAssemblies="@(PackAssemblies)"
+        PackAssemblies="@(AliasAssemblies)"
       >
 
-    </AssemblyPack.PackTask>
+    </Alias.AliasTask>
 
   </Target>
 

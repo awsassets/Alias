@@ -19,7 +19,7 @@ public partial class Processor
     {
         var assembly = typeof(Processor).Assembly;
 
-        Logger.LogInfo($"AssemblyPack (version {assembly.GetName().Version} @ {assembly.CodeBase}) Executing");
+        Logger.LogInfo($"Alias (version {assembly.GetName().Version} @ {assembly.CodeBase}) Executing");
 
         var stopwatch = Stopwatch.StartNew();
 

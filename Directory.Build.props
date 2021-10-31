@@ -10,8 +10,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageOutputPath>$(SolutionDir)nugets</PackageOutputPath>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeAllInPackage</TargetsForTfmSpecificContentInPackage>
-    <PackageProjectUrl>https://github.com/SimonCropp/AssemblyPack</PackageProjectUrl>
-    <PackageIconUrl>https://raw.github.com/SimonCropp/AssemblyPack/master/package_icon.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/SimonCropp/Alias</PackageProjectUrl>
+    <PackageIconUrl>https://raw.github.com/SimonCropp/Alias/master/package_icon.png</PackageIconUrl>
     <PackageTags></PackageTags>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Nullable>enable</Nullable>

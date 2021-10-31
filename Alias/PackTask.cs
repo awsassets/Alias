@@ -4,7 +4,7 @@ using Microsoft.Build.Utilities;
 
 namespace AssemblyPack;
 
-public class PackTask :
+public class AliasTask :
     Task,
     ICancelableTask
 {
