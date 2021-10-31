@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Mono.Cecil;
@@ -7,12 +9,10 @@ using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 public partial class Processor
 {
-    public IAssemblyResolver assemblyResolver = null!;
-    public TypeCache TypeCache = null!;
+    IAssemblyResolver assemblyResolver = null!;
+    TypeCache TypeCache = null!;
     public void Inner()
     {
-        ValidateProjectPath();
-        ValidateAssemblyPath();
         try
         {
             SplitUpReferences();
@@ -21,15 +21,63 @@ public partial class Processor
             var infoClassName = GetInfoClassName();
             if (ModuleDefinition.Types.Any(x => x.Name == infoClassName))
             {
-                Logger.LogWarning($"Already processed by Alias. Path: {AssemblyFilePath}");
+                Logger.LogWarning($"Already processed by Alias. Path: {AssemblyPath}");
                 return;
             }
 
             TypeCache = new(ModuleDefinition, assemblyResolver);
             AddWeavingInfo(infoClassName);
-          
-            //EXECUTE
             FindStrongNameKey();
+            var referenceModules = new List<(ModuleDefinition module, AssemblyNameDefinition nameDefinition)>();
+            foreach (var reference in SplitReferences)
+            {
+                var assemblyName = Path.GetFileName(reference);
+                if (!PackAssemblies.Contains(assemblyName))
+                {
+                    continue;
+                }
+
+                var referenceModule = ReadModule(reference, assemblyResolver);
+                var module = referenceModule.module;
+                module.Name += "_Alias";
+                var name = module.Assembly.Name;
+                var nameDefinition = new AssemblyNameDefinition(name + "_Alias", name.Version)
+                {
+                    Attributes = name.Attributes,
+                    HasPublicKey = name.HasPublicKey,
+                    IsRetargetable = name.IsRetargetable,
+                    Culture = name.Culture,
+                    Hash = name.Hash,
+                    IsSideBySideCompatible = name.IsSideBySideCompatible,
+                    HashAlgorithm = name.HashAlgorithm,
+                    IsWindowsRuntime = name.IsWindowsRuntime,
+                    MetadataToken = name.MetadataToken,
+                    PublicKey = PublicKey
+                };
+                referenceModules.Add(new(module, nameDefinition));
+                module.Assembly.Name = nameDefinition;
+            }
+
+            Redirect(ModuleDefinition, referenceModules);
+
+            foreach (var referenceModule in referenceModules)
+            {
+                Redirect(referenceModule.module, referenceModules);
+            }
+
+            foreach (var referenceModule in referenceModules)
+            {
+                var moduleModule = referenceModule.module;
+                var parameters = new WriterParameters
+                {
+                    StrongNameKeyPair = StrongNameKeyPair,
+                    WriteSymbols = hasSymbols
+                };
+
+                moduleModule.Assembly.Name.PublicKey = PublicKey;
+                moduleModule.Write(Path.Combine(IntermediateDirectory, moduleModule.Assembly.Name.Name + ".dll"), parameters);
+            }
+
             WriteModule();
             ModuleDefinition?.Dispose();
         }
@@ -41,6 +89,25 @@ public partial class Processor
         {
             ModuleDefinition?.Dispose();
             assemblyResolver?.Dispose();
+        }
+    }
+
+    void Redirect(ModuleDefinition moduleDefinition, List<(ModuleDefinition module, AssemblyNameDefinition nameDefinition)> referenceModules)
+    {
+        var assemblyReferences = moduleDefinition.AssemblyReferences;
+        foreach (var packAssembly in PackAssemblies)
+        {
+            var toRemove = assemblyReferences.Single(x => x.Name == packAssembly);
+            assemblyReferences.Remove(toRemove);
+        }
+        foreach (var referenceModule in referenceModules)
+        {
+            var referenceModuleModule = referenceModule.module;
+            if (moduleDefinition == referenceModuleModule)
+            {
+                continue;
+            }
+            assemblyReferences.Add(referenceModuleModule.Assembly.Name);
         }
     }
 
@@ -70,5 +137,4 @@ public partial class Processor
 
         typeDefinition.Fields.Add(field);
     }
-
 }

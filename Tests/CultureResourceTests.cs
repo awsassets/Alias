@@ -12,7 +12,7 @@ public class CultureResourceTests : BaseTest
     static CultureResourceTests()
     {
         weavingResult = WeavingHelper.CreateIsolatedAssemblyCopy(
-            "AssemblyToProcess.dll",
+            "AssemblyToProcess",
             new() { "AssemblyToReference" },
             new[]
             {

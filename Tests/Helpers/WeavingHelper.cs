@@ -1,33 +1,56 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 public static class WeavingHelper
 {
     public static WeavingResult CreateIsolatedAssemblyCopy(
-        string assemblyPath, 
-        List<string> includeAssemblies, 
+        string inputAssemblyName,
+        List<string> includeAssemblies,
         string[] references,
-        string assemblyName)
+        string outputAssemblyName)
     {
         var currentDirectory = AssemblyDirectoryHelper.GetCurrentDirectory();
 
-        if (!Path.IsPathRooted(assemblyPath))
-        {
-            assemblyPath = Path.Combine(currentDirectory, assemblyPath);
-        }
-        
+        var fullPathReferences = references.Select(x => Path.Combine(currentDirectory, x)).ToList();
+        fullPathReferences.Add(typeof(string).Assembly.Location);
+        var tempDir = Path.Combine(currentDirectory, "AssemblyPackTemp");
+        Directory.CreateDirectory(tempDir);
+
+        var inputAssemblyPath = Path.Combine(currentDirectory, inputAssemblyName+".dll");
+        var outputAssemblyPath = Path.Combine(tempDir, outputAssemblyName+".dll");
+        File.Delete(outputAssemblyPath );
+        File.Copy(inputAssemblyPath,outputAssemblyPath );
+
+        using var assemblyResolver = new TestAssemblyResolver();
+
+        var testStatus = new WeavingResult();
+
         var processor = new Processor
         {
-            AssemblyFilePath = assemblyPath,
+            AssemblyPath = outputAssemblyPath,
             Logger = new MockBuildLogger(),
-            References = string.Join(";", references),
+            References = string.Join(";", fullPathReferences),
             PackAssemblies = includeAssemblies
         };
 
-        return processor.ExecuteTestRun(
-            assemblyPath,
-            assemblyName: assemblyName,
-            ignoreCodes: new []{ "0x80131869" },
-            runPeVerify:false);
+        processor.Execute();
+
+        if (IsWindows())
+        {
+            PeVerifier.ThrowIfDifferent(inputAssemblyPath, outputAssemblyPath, tempDir);
+        }
+
+        testStatus.Assembly = Assembly.Load(File.ReadAllBytes(outputAssemblyPath));
+        testStatus.AssemblyPath = outputAssemblyPath;
+        return testStatus;
+    }
+
+    static bool IsWindows()
+    {
+        var platform = Environment.OSVersion.Platform.ToString();
+        return platform.StartsWith("win", StringComparison.OrdinalIgnoreCase);
     }
 }

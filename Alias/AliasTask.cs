@@ -9,7 +9,7 @@ public class AliasTask :
 {
     Processor processor = null!;
     [Required]
-    public string AssemblyFile { set; get; } = null!;
+    public string AssemblyPath { set; get; } = null!;
 
     [Required]
     public string IntermediateDirectory { get; set; } = null!;
@@ -23,9 +23,6 @@ public class AliasTask :
     public ITaskItem[] PackAssemblies{ get; set; } = null!;
 
     [Required]
-    public string ProjectDirectory { get; set; } = null!;
-
-    [Required]
     public string References { get; set; } = null!;
 
     public override bool Execute()
@@ -35,12 +32,11 @@ public class AliasTask :
         processor = new()
         {
             Logger = buildLogger,
-            AssemblyFilePath = AssemblyFile,
+            AssemblyPath = AssemblyPath,
             IntermediateDirectory = IntermediateDirectory,
             KeyFilePath = KeyOriginatorFile ?? AssemblyOriginatorKeyFile,
             SignAssembly = SignAssembly,
             DelaySign = DelaySign,
-            ProjectDirectory = ProjectDirectory,
             References = References,
             PackAssemblies = PackAssemblies.Select(x => x.ItemSpec).ToList()
         };

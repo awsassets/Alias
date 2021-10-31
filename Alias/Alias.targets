@@ -27,7 +27,7 @@
            Text="Alias is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)." />
     
       <Alias.AliasTask
-        AssemblyFile="@(IntermediateAssembly)"
+        AssemblyPath="$(MSBuildProjectDirectory)\@(IntermediateAssembly)"
         IntermediateDirectory="$(ProjectDir)$(IntermediateOutputPath)"
         KeyOriginatorFile="$(KeyOriginatorFile)"
         AssemblyOriginatorKeyFile="$(AssemblyOriginatorKeyFile)"

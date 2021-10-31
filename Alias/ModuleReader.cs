@@ -7,7 +7,7 @@ public partial class Processor
 
     public void ReadModule()
     {
-        var result = ReadModule(AssemblyFilePath, assemblyResolver);
+        var result = ReadModule(AssemblyPath, assemblyResolver);
         hasSymbols = result.hasSymbols;
         if (!hasSymbols)
         {

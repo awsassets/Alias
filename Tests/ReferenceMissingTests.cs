@@ -11,7 +11,7 @@ public class ReferenceMissingTests
         Assert.Throws<Exception>(() =>
         {
             WeavingHelper.CreateIsolatedAssemblyCopy(
-                "AssemblyToProcess.dll",
+                "AssemblyToProcess",
                 new(){ "AssemblyToReference","MissingAssembly" },
                 new[] { "AssemblyToReference.dll" },
                 "InitializeCall");

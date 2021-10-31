@@ -8,10 +8,10 @@ public class ReferenceCasingTests : BasicTests
     static ReferenceCasingTests()
     {
         weavingResult = WeavingHelper.CreateIsolatedAssemblyCopy(
-            "AssemblyToProcess.dll",
+            inputAssemblyName:"AssemblyToProcess",
             new(){ "AssemblyToReference" },
             new[] { "AssemblyToReference.dll" },
-            assemblyName: "ReferenceCasing");
+            outputAssemblyName: "ReferenceCasing");
     }
 
     public override WeavingResult WeavingResult => weavingResult;

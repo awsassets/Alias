@@ -6,7 +6,7 @@ public partial class Processor
     public virtual void WriteModule()
     {
         var stopwatch = Stopwatch.StartNew();
-        Logger.LogDebug($"Writing assembly to '{AssemblyFilePath}'.");
+        Logger.LogDebug($"Writing assembly to '{AssemblyPath}'.");
 
         var parameters = new WriterParameters
         {
@@ -15,7 +15,7 @@ public partial class Processor
         };
 
         ModuleDefinition.Assembly.Name.PublicKey = PublicKey;
-        ModuleDefinition.Write(AssemblyFilePath, parameters);
+        ModuleDefinition.Write(AssemblyPath, parameters);
         Logger.LogDebug($"Finished writing assembly {stopwatch.ElapsedMilliseconds}ms.");
     }
 }

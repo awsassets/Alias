@@ -65,15 +65,7 @@ static class PeVerifier
         string afterAssemblyPath,
         string? workingDirectory = null)
     {
-        ThrowIfDifferent(beforeAssemblyPath, afterAssemblyPath, Enumerable.Empty<string>(), workingDirectory);
-    }
-
-    public static void ThrowIfDifferent(
-        string beforeAssemblyPath,
-        string afterAssemblyPath,
-        IEnumerable<string> ignoreCodes,
-        string? workingDirectory = null)
-    {
+        var ignoreCodes = new[] { "0x80131869" };
         Verify(beforeAssemblyPath, afterAssemblyPath, ignoreCodes, out var beforeOutput, out var afterOutput, workingDirectory);
         if (beforeOutput == afterOutput)
         {

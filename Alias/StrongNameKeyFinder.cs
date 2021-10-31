@@ -19,6 +19,7 @@ public partial class Processor
         {
             return;
         }
+
         var keyFilePath = GetKeyFilePath();
         if (keyFilePath != null)
         {
@@ -79,6 +80,7 @@ public partial class Processor
             Logger.LogDebug($"Using strong name key from [AssemblyKeyFileAttribute(\"{keyFileSuffix}\")] '{keyFilePath}'");
             return keyFilePath;
         }
+
         Logger.LogDebug("No strong name key found");
         return null;
     }

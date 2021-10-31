@@ -4,12 +4,11 @@ using System.Diagnostics;
 
 public partial class Processor
 {
-    public string AssemblyFilePath = null!;
+    public string AssemblyPath = null!;
     public string IntermediateDirectory = null!;
     public string? KeyFilePath;
     public bool SignAssembly;
     public bool DelaySign;
-    public string ProjectDirectory = null!;
     public string References = null!;
 
     public ILogger Logger = null!;

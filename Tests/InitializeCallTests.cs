@@ -8,7 +8,7 @@ public class InitializeCallTests : BasicTests
     static InitializeCallTests()
     {
         weavingResult = WeavingHelper.CreateIsolatedAssemblyCopy(
-            "AssemblyToProcess.dll",
+            "AssemblyToProcess",
             new(){ "AssemblyToReference" },
             new[] { "AssemblyToReference.dll" },
             "InitializeCall");
