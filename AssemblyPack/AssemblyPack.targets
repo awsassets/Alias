@@ -1,0 +1,45 @@
+﻿<Project>
+  <PropertyGroup>
+    <AssemblyPackPath >$(MSBuildThisFileDirectory)..\</AssemblyPackPath>
+	<AssemblyPackDirectory Condition="$(MSBuildRuntimeType) == 'Core'">$(AssemblyPackPath)netstandardtask</AssemblyPackDirectory>
+	<AssemblyPackDirectory Condition="$(MSBuildRuntimeType) != 'Core'">$(AssemblyPackPath)netclassictask</AssemblyPackDirectory>
+    <AssemblyPackAssembly>$(AssemblyPackDirectory)\AssemblyPack.dll</AssemblyPackAssembly>
+    <MsBuildMajorVersion>15</MsBuildMajorVersion>
+    <MsBuildMajorVersion Condition="'$(MSBuildVersion)' != ''">$([System.Version]::Parse($(MSBuildVersion)).Major)</MsBuildMajorVersion>
+  </PropertyGroup>
+
+  <!-- Support for NCrunch -->
+  <ItemGroup Condition="'$(NCrunch)' == '1' and '$(TargetFramework)' == '' and '$(TargetFrameworks)' == ''">
+    <None Include="$(AssemblyPackDirectory)\*.*" />
+  </ItemGroup>
+
+  <UsingTask TaskName="AssemblyPack.PackTask" AssemblyFile="$(AssemblyPackAssembly)" />
+
+  <Target
+      Name="AssemblyPackTarget"
+      AfterTargets="AfterCompile"
+      Condition="Exists(@(IntermediateAssembly)) And ($(DesignTimeBuild) != true Or $(BuildingForLiveUnitTesting) == true) And $(DisableAssemblyPack) != true"
+      DependsOnTargets="$(AssemblyPackDependsOnTargets)"
+      Inputs="@(IntermediateAssembly)"
+      Outputs="$(IntermediateOutputPath)">
+
+    <Error Condition="($(MsBuildMajorVersion) &lt; 16)"
+           Text="AssemblyPack is only supported on MSBuild 16 and above. Current version: $(MsBuildMajorVersion)." />
+    
+      <AssemblyPack.PackTask
+        AssemblyFile="@(IntermediateAssembly)"
+        IntermediateDirectory="$(ProjectDir)$(IntermediateOutputPath)"
+        KeyOriginatorFile="$(KeyOriginatorFile)"
+        AssemblyOriginatorKeyFile="$(AssemblyOriginatorKeyFile)"
+        ProjectDirectory="$(MSBuildProjectDirectory)"
+        References="@(ReferencePath)"
+        SignAssembly="$(SignAssembly)"
+        DelaySign="$(DelaySign)"
+        PackAssemblies="@(PackAssemblies)"
+      >
+
+    </AssemblyPack.PackTask>
+
+  </Target>
+
+</Project>

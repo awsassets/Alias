@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>AssemblyPack.</Description>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <NuSpecFile>AssemblyPack.nuspec</NuSpecFile>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="$(SolutionDir)\Template\bin\$(Configuration)\netstandard2.0\Template.dll">
+      <Link>bin\Template.dll</Link>
+      <InProject>false</InProject>
+      <LogicalName>Template.dll</LogicalName>
+    </EmbeddedResource>
+
+    <PackageReference Include="Nullable" Version="1.3.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" Condition="$(Configuration) == 'Release'" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework) == 'netstandard2.0'">
+    <Reference Include="Mono.Cecil" HintPath="..\Lib\Cecil\netstandard2.0\Mono.Cecil.dll" />
+    <Reference Include="Mono.Cecil.Pdb" HintPath="..\Lib\Cecil\netstandard2.0\Mono.Cecil.Pdb.dll" />
+    <Reference Include="Mono.Cecil.Rocks" HintPath="..\Lib\Cecil\netstandard2.0\Mono.Cecil.Rocks.dll" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="16.11.0" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework) == 'net472'">
+    <Reference Include="Mono.Cecil" HintPath="..\Lib\Cecil\net40\Mono.Cecil.dll" />
+    <Reference Include="Mono.Cecil.Pdb" HintPath="..\Lib\Cecil\net40\Mono.Cecil.Pdb.dll" />
+    <Reference Include="Mono.Cecil.Rocks" HintPath="..\Lib\Cecil\net40\Mono.Cecil.Rocks.dll" />
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Tasks.v4.0" />
+    <Reference Include="Microsoft.Build.Utilities.v4.0" />
+  </ItemGroup>
+
+  <Target Name="SetPackageDependencies" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <NuspecProperties>configuration=$(Configuration);version=$(PackageVersion);authors=$(Authors);iconUrl=$(PackageIconUrl);projectUrl=$(PackageProjectUrl);description=$(Description);tags=$(PackageTags)</NuspecProperties>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="PreparePackagesForIntegrationSolution" BeforeTargets="GenerateNuspec">
+    <RemoveDir Directories="$(SolutionDir)packages" />
+    <WriteLinesToFile Lines="&lt;Project&gt;&lt;PropertyGroup&gt;&lt;IntegrationVersion&gt;$(PackageVersion)&lt;/IntegrationVersion&gt;&lt;/PropertyGroup&gt;&lt;/Project&gt;" File="..\Integration\Directory.Build.props" Overwrite="true" />
+  </Target>
+
+</Project>
