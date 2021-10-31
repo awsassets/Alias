@@ -11,6 +11,7 @@ public partial class Processor
 {
     IAssemblyResolver assemblyResolver = null!;
     TypeCache TypeCache = null!;
+
     public void Inner()
     {
         try
@@ -31,7 +32,7 @@ public partial class Processor
             var referenceModules = new List<(ModuleDefinition module, AssemblyNameDefinition nameDefinition)>();
             foreach (var reference in SplitReferences)
             {
-                var assemblyName = Path.GetFileName(reference);
+                var assemblyName = Path.GetFileNameWithoutExtension(reference);
                 if (!PackAssemblies.Contains(assemblyName))
                 {
                     continue;
@@ -41,21 +42,30 @@ public partial class Processor
                 var module = referenceModule.module;
                 module.Name += "_Alias";
                 var name = module.Assembly.Name;
-                var nameDefinition = new AssemblyNameDefinition(name + "_Alias", name.Version)
+                name.Name +="_Alias";
+                //var nameDefinition = new AssemblyNameDefinition($"{name.Name}_Alias", name.Version)
+                //{
+                    
+                //   // Attributes = name.Attributes,
+                //    //HasPublicKey = name.HasPublicKey,
+                //    //IsRetargetable = name.IsRetargetable,
+                //    //Culture = name.Culture,
+                //    //Hash = name.Hash,
+                //    //IsSideBySideCompatible = name.IsSideBySideCompatible,
+                //   // HashAlgorithm = name.HashAlgorithm,
+                //    //IsWindowsRuntime = name.IsWindowsRuntime,
+                //    //MetadataToken = name.MetadataToken
+                    
+                //};
+                // if (PublicKey != null)
                 {
-                    Attributes = name.Attributes,
-                    HasPublicKey = name.HasPublicKey,
-                    IsRetargetable = name.IsRetargetable,
-                    Culture = name.Culture,
-                    Hash = name.Hash,
-                    IsSideBySideCompatible = name.IsSideBySideCompatible,
-                    HashAlgorithm = name.HashAlgorithm,
-                    IsWindowsRuntime = name.IsWindowsRuntime,
-                    MetadataToken = name.MetadataToken,
-                    PublicKey = PublicKey
-                };
-                referenceModules.Add(new(module, nameDefinition));
-                module.Assembly.Name = nameDefinition;
+                    //name.PublicKey = PublicKey;
+                    //name.HasPublicKey = true;
+                    //name.PublicKeyToken = null;
+                }
+
+                referenceModules.Add(new(module, name));
+              //  module.Assembly.Name = name;
             }
 
             Redirect(ModuleDefinition, referenceModules);
@@ -97,9 +107,13 @@ public partial class Processor
         var assemblyReferences = moduleDefinition.AssemblyReferences;
         foreach (var packAssembly in PackAssemblies)
         {
-            var toRemove = assemblyReferences.Single(x => x.Name == packAssembly);
-            assemblyReferences.Remove(toRemove);
+            var toRemove = assemblyReferences.SingleOrDefault(x => x.Name == packAssembly);
+            if (toRemove != null)
+            {
+                assemblyReferences.Remove(toRemove);
+            }
         }
+
         foreach (var referenceModule in referenceModules)
         {
             var referenceModuleModule = referenceModule.module;
@@ -107,6 +121,7 @@ public partial class Processor
             {
                 continue;
             }
+
             assemblyReferences.Add(referenceModuleModule.Assembly.Name);
         }
     }
@@ -116,7 +131,7 @@ public partial class Processor
         var classPrefix = ModuleDefinition.Assembly.Name.Name.Replace(".", "");
         return $"{classPrefix}_ProcessedByAlias";
     }
-    
+
     void AddWeavingInfo(string infoClassName)
     {
         const TypeAttributes typeAttributes = TypeAttributes.NotPublic | TypeAttributes.Class;

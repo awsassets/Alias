@@ -19,10 +19,10 @@ public static class WeavingHelper
         var tempDir = Path.Combine(currentDirectory, "AssemblyPackTemp");
         Directory.CreateDirectory(tempDir);
 
-        var inputAssemblyPath = Path.Combine(currentDirectory, inputAssemblyName+".dll");
-        var outputAssemblyPath = Path.Combine(tempDir, outputAssemblyName+".dll");
-        File.Delete(outputAssemblyPath );
-        File.Copy(inputAssemblyPath,outputAssemblyPath );
+        var inputAssemblyPath = Path.Combine(currentDirectory, inputAssemblyName + ".dll");
+        var outputAssemblyPath = Path.Combine(tempDir, outputAssemblyName + ".dll");
+        File.Delete(outputAssemblyPath);
+        File.Copy(inputAssemblyPath, outputAssemblyPath);
 
         using var assemblyResolver = new TestAssemblyResolver();
 
@@ -31,6 +31,7 @@ public static class WeavingHelper
         var processor = new Processor
         {
             AssemblyPath = outputAssemblyPath,
+            IntermediateDirectory = tempDir,
             Logger = new MockBuildLogger(),
             References = string.Join(";", fullPathReferences),
             PackAssemblies = includeAssemblies
