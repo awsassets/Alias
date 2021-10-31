@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using Mono.Cecil;
+using FieldAttributes = Mono.Cecil.FieldAttributes;
+using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 public partial class Processor
 {
@@ -13,14 +16,16 @@ public partial class Processor
             SplitUpReferences();
             assemblyResolver = new AssemblyResolver(Logger, SplitReferences);
             ReadModule();
-            var weavingInfoClassName = GetWeavingInfoClassName();
-            if (ModuleDefinition.Types.Any(x => x.Name == weavingInfoClassName))
+            var infoClassName = GetInfoClassName();
+            if (ModuleDefinition.Types.Any(x => x.Name == infoClassName))
             {
-                Logger.LogWarning($"The assembly has already been processed by AssemblyPack. Weaving aborted. Path: {AssemblyFilePath}");
+                Logger.LogWarning($"Already processed by Alias. Path: {AssemblyFilePath}");
                 return;
             }
-            TypeCache = new(ModuleDefinition,assemblyResolver);
-            var moduleWeaver = new ModuleWeaver(true,true,PackAssemblies)
+
+            TypeCache = new(ModuleDefinition, assemblyResolver);
+            AddWeavingInfo(infoClassName);
+            var moduleWeaver = new ModuleWeaver(true, true, PackAssemblies)
             {
                 ModuleDefinition = ModuleDefinition,
                 AssemblyFilePath = AssemblyFilePath,
@@ -44,9 +49,31 @@ public partial class Processor
         }
     }
 
-    string GetWeavingInfoClassName()
+    string GetInfoClassName()
     {
         var classPrefix = ModuleDefinition.Assembly.Name.Name.Replace(".", "");
         return $"{classPrefix}_ProcessedByAlias";
     }
+    
+    void AddWeavingInfo(string infoClassName)
+    {
+        const TypeAttributes typeAttributes = TypeAttributes.NotPublic | TypeAttributes.Class;
+        var typeDefinition = new TypeDefinition(null, infoClassName, typeAttributes, TypeCache.ObjectReference);
+        ModuleDefinition.Types.Add(typeDefinition);
+
+        var attrs = typeof(Processor).Assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute));
+        var versionAttribute = (AssemblyFileVersionAttribute)attrs.FirstOrDefault();
+
+        const FieldAttributes fieldAttributes = FieldAttributes.Assembly |
+                                                FieldAttributes.Literal |
+                                                FieldAttributes.Static |
+                                                FieldAttributes.HasDefault;
+        var field = new FieldDefinition("AliasVersion", fieldAttributes, TypeCache.StringReference)
+        {
+            Constant = versionAttribute.Version
+        };
+
+        typeDefinition.Fields.Add(field);
+    }
+
 }

@@ -20,10 +20,5 @@ public partial class ModuleWeaver
     {
         FixResourceCase();
         EmbedResources();
-
-        ImportAssemblyLoader();
-        CallAttach();
-
-        BuildUpNameDictionary();
     }
 }
