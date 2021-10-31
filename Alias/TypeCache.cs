@@ -56,18 +56,9 @@ public class TypeCache
             }
         }
         
-        VoidReference = module.ImportReference(types["System.Void"]);
-
         ObjectReference = module.ImportReference(types["System.Object"]);
 
         StringReference = module.ImportReference(types["System.String"]);
-        var dictionary = types["System.Collections.Generic.Dictionary`2"];
-        var dictionaryOfString = module.ImportReference(dictionary);
-        DictionaryOfStringAdd = module.ImportReference(dictionaryOfString.Resolve().Methods.First(m => m.Name == "Add"))
-            .MakeHostInstanceGeneric(StringReference, StringReference);
-
-        var compilerGeneratedAttribute = types["System.Runtime.CompilerServices.CompilerGeneratedAttribute"];
-        CompilerGeneratedAttributeCtor = module.ImportReference(compilerGeneratedAttribute.Methods.First(x => x.IsConstructor));
     }
 
     public static AssemblyDefinition? ResolveIgnoreVersion(IAssemblyResolver resolver, string assemblyName)
@@ -91,8 +82,5 @@ public class TypeCache
     }
     
     public TypeReference ObjectReference { get; }
-    public TypeReference VoidReference { get; }
     public TypeReference StringReference { get; }
-    public MethodReference CompilerGeneratedAttributeCtor { get; }
-    public MethodReference DictionaryOfStringAdd { get; }
 }
