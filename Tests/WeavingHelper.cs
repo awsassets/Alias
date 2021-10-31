@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using VerifyTests;
 
 public static class WeavingHelper
 {
@@ -16,7 +17,7 @@ public static class WeavingHelper
 
         var fullPathReferences = references.Select(x => Path.Combine(currentDirectory, x)).ToList();
         fullPathReferences.Add(typeof(string).Assembly.Location);
-        var tempDir = Path.Combine(currentDirectory, "AssemblyPackTemp");
+        var tempDir = Path.Combine(currentDirectory, "AliasTemp");
         Directory.CreateDirectory(tempDir);
 
         var inputAssemblyPath = Path.Combine(currentDirectory, inputAssemblyName + ".dll");
@@ -34,7 +35,9 @@ public static class WeavingHelper
             IntermediateDirectory = tempDir,
             Logger = new MockBuildLogger(),
             References = string.Join(";", fullPathReferences),
-            PackAssemblies = includeAssemblies
+            PackAssemblies = includeAssemblies,
+            SignAssembly = true,
+            KeyFilePath = Path.Combine(AttributeReader.GetSolutionDirectory(), "Key.snk")
         };
 
         processor.Execute();

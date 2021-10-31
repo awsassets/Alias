@@ -42,7 +42,7 @@ public partial class Processor
                 var module = referenceModule.module;
 
                 var name = new AssemblyNameDefinition($"{module.Assembly.Name.Name}_Alias", module.Assembly.Name.Version);
-                name.PublicKey = this.PublicKey;
+                name.PublicKey = PublicKey;
                 module.Assembly.Name = name;
                 referenceModules.Add(new(module, name));
             }
