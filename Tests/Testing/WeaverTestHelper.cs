@@ -4,17 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Mono.Cecil;
-using Mono.Cecil.Cil;
 
 public static class WeaverTestHelper
 {
     public static WeavingResult ExecuteTestRun(
-        this ModuleWeaver weaver,
+        this Processor weaver,
         string assemblyPath,
         bool runPeVerify = true,
         string? assemblyName = null,
-        IEnumerable<string>? ignoreCodes = null,
-        bool writeSymbols = false)
+        IEnumerable<string>? ignoreCodes = null)
     {
         assemblyPath = Path.GetFullPath(assemblyPath);
         var tempDir = Path.Combine(Path.GetDirectoryName(assemblyPath)!, "AssemblyPackTemp");
@@ -55,17 +53,6 @@ public static class WeaverTestHelper
             weaver.ModuleDefinition = module;
 
             weaver.Execute();
-
-            var writerParameters = new WriterParameters
-            {
-                WriteSymbols = writeSymbols
-            };
-            if (writeSymbols)
-            {
-                writerParameters.SymbolWriterProvider = new EmbeddedPortablePdbWriterProvider();
-            }
-
-            module.Write(targetAssemblyPath, writerParameters);
         }
 
         if (runPeVerify && IsWindows())

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 public static class WeavingHelper
 {
@@ -12,18 +11,20 @@ public static class WeavingHelper
     {
         var currentDirectory = AssemblyDirectoryHelper.GetCurrentDirectory();
 
-        var weavingTask = new ModuleWeaver(true,false,includeAssemblies)
-        {
-            Logger = new MockBuildLogger(),
-            References = string.Join(";", references.Select(r => Path.Combine(currentDirectory, r))),
-        };
-
         if (!Path.IsPathRooted(assemblyPath))
         {
             assemblyPath = Path.Combine(currentDirectory, assemblyPath);
         }
+        
+        var processor = new Processor
+        {
+            AssemblyFilePath = assemblyPath,
+            Logger = new MockBuildLogger(),
+            References = string.Join(";", references),
+            PackAssemblies = includeAssemblies
+        };
 
-        return weavingTask.ExecuteTestRun(
+        return processor.ExecuteTestRun(
             assemblyPath,
             assemblyName: assemblyName,
             ignoreCodes: new []{ "0x80131869" },

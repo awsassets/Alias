@@ -5,8 +5,7 @@ using Microsoft.Build.Utilities;
 namespace AssemblyPack;
 
 public class AliasTask :
-    Task,
-    ICancelableTask
+    Task
 {
     Processor processor = null!;
     [Required]
@@ -47,10 +46,5 @@ public class AliasTask :
         };
 
         return processor.Execute();
-    }
-
-    public void Cancel()
-    {
-        processor.Cancel();
     }
 }

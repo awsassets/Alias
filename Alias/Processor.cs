@@ -41,19 +41,7 @@ public partial class Processor
         finally
         {
             stopwatch.Stop();
-            Logger.LogInfo($"Finished AssemblyPack {stopwatch.ElapsedMilliseconds}ms.");
+            Logger.LogInfo($"Finished Alias {stopwatch.ElapsedMilliseconds}ms.");
         }
-    }
-
-    void Inner()
-    {
-        ValidateProjectPath();
-        ValidateAssemblyPath();
-
-        InnerExecute();
-    }
-
-    public void Cancel()
-    {
     }
 }

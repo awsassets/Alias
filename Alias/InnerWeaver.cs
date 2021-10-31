@@ -9,8 +9,10 @@ public partial class Processor
 {
     public IAssemblyResolver assemblyResolver = null!;
     public TypeCache TypeCache = null!;
-    public void InnerExecute()
+    public void Inner()
     {
+        ValidateProjectPath();
+        ValidateAssemblyPath();
         try
         {
             SplitUpReferences();
@@ -25,15 +27,8 @@ public partial class Processor
 
             TypeCache = new(ModuleDefinition, assemblyResolver);
             AddWeavingInfo(infoClassName);
-            var moduleWeaver = new ModuleWeaver(true, true, PackAssemblies)
-            {
-                ModuleDefinition = ModuleDefinition,
-                AssemblyFilePath = AssemblyFilePath,
-                References = References,
-                Logger = Logger,
-                TypeCache = TypeCache
-            };
-            moduleWeaver.Execute();
+          
+            //EXECUTE
             FindStrongNameKey();
             WriteModule();
             ModuleDefinition?.Dispose();
