@@ -13,7 +13,7 @@
     <None Include="$(AliasDirectory)\*.*" />
   </ItemGroup>
 
-  <UsingTask TaskName="Alias.PackTask" AssemblyFile="$(AliasAssembly)" />
+  <UsingTask TaskName="Alias.AliasTask" AssemblyFile="$(AliasAssembly)" />
 
   <Target
       Name="AliasTarget"
@@ -35,11 +35,18 @@
         References="@(ReferencePath)"
         SignAssembly="$(SignAssembly)"
         DelaySign="$(DelaySign)"
-        PackAssemblies="@(AliasAssemblies)"
+        AssembliesToAlias="@(AssembliesToAlias)"
       >
+        <Output
+          TaskParameter="AliasedAssemblies"
+          PropertyName="AliasedAssemblies" />
 
     </Alias.AliasTask>
 
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(AssembliesToAlias)" />
+      <ReferenceCopyLocalPaths Include="@(AliasedAssemblies)" />
+    </ItemGroup>
   </Target>
 
 </Project>

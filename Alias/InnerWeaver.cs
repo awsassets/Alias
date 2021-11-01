@@ -11,8 +11,17 @@ public partial class Processor
 {
     IAssemblyResolver assemblyResolver = null!;
     TypeCache TypeCache = null!;
+    public string AssemblyPath = null!;
+    public string IntermediateDirectory = null!;
+    public string? KeyFilePath;
+    public bool SignAssembly;
+    public bool DelaySign;
+    public string References = null!;
 
-    public void Inner()
+    public ILogger Logger = null!;
+    public List<string> PackAssemblies = null!;
+
+    public void Execute()
     {
         try
         {
