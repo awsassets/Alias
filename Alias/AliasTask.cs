@@ -44,7 +44,6 @@ public class AliasTask :
         buildLogger.LogInfo($"Alias (version {assembly.GetName().Version} @ {assembly.CodeBase}) Executing");
 
         var stopwatch = Stopwatch.StartNew();
-        Debugger.Launch();
         try
         {
             processor = new(
