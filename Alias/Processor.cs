@@ -94,22 +94,14 @@ public partial class Processor
         var assemblyReferences = moduleDefinition.AssemblyReferences;
         foreach (var packAssembly in PackAssemblies)
         {
-            var toRemove = assemblyReferences.SingleOrDefault(x => x.Name == packAssembly);
-            if (toRemove != null)
+            var toChange = assemblyReferences.SingleOrDefault(x => x.Name == packAssembly);
+            //TODO: throw for invalid ref
+            if (toChange != null)
             {
-                assemblyReferences.Remove(toRemove);
+                var valueTuple = referenceModules.Single(x=>x.nameDefinition.Name.StartsWith(packAssembly+"_Alias"));
+                toChange.Name = valueTuple.nameDefinition.Name;
+                toChange.PublicKey = valueTuple.nameDefinition.PublicKey;
             }
-        }
-
-        foreach (var referenceModule in referenceModules)
-        {
-            var referenceModuleModule = referenceModule.module;
-            if (moduleDefinition == referenceModuleModule)
-            {
-                continue;
-            }
-
-            assemblyReferences.Add(referenceModuleModule.Assembly.Name);
         }
     }
 
