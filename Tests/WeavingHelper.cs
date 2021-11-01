@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -18,16 +17,7 @@ public static class WeavingHelper
 #if(NET472)
         fullPathReferences.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\mscorlib.dll");
 #else
-        var nugetPackagesEnv = Environment.GetEnvironmentVariable("NUGET_PACKAGES");
-        if (nugetPackagesEnv != null)
-        {
-            fullPathReferences.Add(Path.Combine(nugetPackagesEnv, @"netstandard.library\2.0.3\build\netstandard2.0\ref\netstandard.dll"));
-        }
-        else
-        {
-            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            fullPathReferences.Add(Path.Combine(userProfile, @".nuget\packages\netstandard.library\2.0.3\build\netstandard2.0\ref\netstandard.dll"));
-        }
+        fullPathReferences.Add(Path.Combine(Nuget.PackagesPath, @"netstandard.library\2.0.3\build\netstandard2.0\ref\netstandard.dll"));
 #endif
 
         var inputAssemblyPath = Path.Combine(currentDirectory, inputAssemblyName + ".dll");
