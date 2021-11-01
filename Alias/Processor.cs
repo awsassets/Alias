@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -59,11 +60,11 @@ public partial class Processor
                 referenceModules.Add(new(module, name));
             }
 
-            Redirect(ModuleDefinition, referenceModules);
+            Redirect(ModuleDefinition);
 
             foreach (var referenceModule in referenceModules)
             {
-                Redirect(referenceModule.module, referenceModules);
+                Redirect(referenceModule.module);
             }
 
             foreach (var referenceModule in referenceModules)
@@ -89,7 +90,7 @@ public partial class Processor
         }
     }
 
-    void Redirect(ModuleDefinition targetModule, List<(ModuleDefinition module, AssemblyNameDefinition nameDefinition)> referenceModules)
+    void Redirect(ModuleDefinition targetModule)
     {
         var assemblyReferences = targetModule.AssemblyReferences;
         foreach (var packAssembly in PackAssemblies)
@@ -98,9 +99,15 @@ public partial class Processor
             //TODO: throw for invalid ref
             if (toChange != null)
             {
-                var valueTuple = referenceModules.Single(x=>x.nameDefinition.Name.StartsWith(packAssembly+"_Alias"));
-                toChange.Name = valueTuple.nameDefinition.Name;
-                toChange.PublicKey = valueTuple.nameDefinition.PublicKey;
+                toChange.Name += "_Alias";
+                if (PublicKey == null)
+                {
+                    toChange.PublicKey = Array.Empty<byte>();
+                }
+                else
+                {
+                    toChange.PublicKey = PublicKey;
+                }
             }
         }
     }
