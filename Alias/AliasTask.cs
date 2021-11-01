@@ -2,7 +2,7 @@ using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace AssemblyPack;
+namespace Alias;
 
 public class AliasTask :
     Task
