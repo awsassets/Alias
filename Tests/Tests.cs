@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading;
-using System.Threading.Tasks;
-using VerifyXunit;
 using Xunit;
 
 public class Tests
@@ -19,8 +17,7 @@ public class Tests
                 "AssemblyToReference.dll",
                 "de\\AssemblyToReference.resources.dll",
                 "fr\\AssemblyToReference.resources.dll"
-            },
-            "Culture");
+            });
     }
 
     [Fact]
@@ -58,24 +55,5 @@ public class Tests
         {
             Assert.Contains("ClassToReference.cs:line", exception.StackTrace);
         }
-    }
-
-    [Fact]
-    public void TypeReferencedWithPartialAssemblyNameIsLoadedFromExistingAssemblyInstance()
-    {
-        var instance = weavingResult.GetInstance("ClassToTest");
-        var assemblyLoadedByCompileTimeReference = instance.GetReferencedAssembly();
-        var typeName = "ClassToReference, AssemblyToReference";
-        var typeLoadedWithPartialAssemblyName = Type.GetType(typeName);
-        Assert.NotNull(typeLoadedWithPartialAssemblyName);
-
-        Assert.Equal(assemblyLoadedByCompileTimeReference, typeLoadedWithPartialAssemblyName!.Assembly);
-    }
-
-    [Fact]
-    public Task TemplateHasCorrectSymbols()
-    {
-        var text = Ildasm.DecompileAssemblyLoader(weavingResult.AssemblyPath);
-        return Verifier.Verify(text).UniqueForAssemblyConfiguration().UniqueForRuntime();
     }
 }
