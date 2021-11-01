@@ -12,8 +12,8 @@ public class ReferenceMissingTests
         {
             WeavingHelper.CreateIsolatedAssemblyCopy(
                 "AssemblyToProcess",
-                new(){ "AssemblyToReference","MissingAssembly" },
-                new[] { "AssemblyToReference.dll" },
+                new() {"AssemblyToReference", "MissingAssembly"},
+                new[] {"AssemblyToReference.dll"},
                 "InitializeCall");
         });
     }
