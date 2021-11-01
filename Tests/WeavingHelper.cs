@@ -6,22 +6,17 @@ using VerifyTests;
 
 public static class WeavingHelper
 {
-    public static WeavingResult CreateIsolatedAssemblyCopy(
+    public static Assembly CreateIsolatedAssemblyCopy(
         string inputAssemblyName,
         List<string> includeAssemblies,
         string[] references)
     {
         var currentDirectory = AssemblyDirectoryHelper.GetCurrentDirectory();
-
-        using var assemblyResolver = new TestAssemblyResolver();
-
+        
         var fullPathReferences = references.Select(x => Path.Combine(currentDirectory, x)).ToList();
         fullPathReferences.Add(typeof(string).Assembly.Location);
 
         var inputAssemblyPath = Path.Combine(currentDirectory, inputAssemblyName + ".dll");
-
-
-        var testStatus = new WeavingResult();
 
         var processor = new Processor
         {
@@ -36,7 +31,6 @@ public static class WeavingHelper
 
         processor.Execute();
 
-        testStatus.Assembly = Assembly.Load(File.ReadAllBytes(inputAssemblyPath));
-        return testStatus;
+        return Assembly.Load(File.ReadAllBytes(inputAssemblyPath));
     }
 }
