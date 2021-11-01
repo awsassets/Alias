@@ -27,9 +27,6 @@ public class BuildLogger :
 
     public virtual void LogError(string message)
     {
-        ErrorOccurred = true;
         buildEngine.LogErrorEvent(new("", "", null, 0, 0, 0, 0, message, "", "Alias"));
     }
-
-    public bool ErrorOccurred { get; private set; }
 }

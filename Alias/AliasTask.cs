@@ -56,9 +56,9 @@ public class AliasTask :
                 DelaySign,
                 AssembliesToAlias.Select(x => x.ItemSpec).ToList());
             processor.Execute();
-            return !buildLogger.ErrorOccurred;
+            return true;
         }
-        catch (WeavingException exception)
+        catch (ErrorException exception)
         {
             buildLogger.LogError(exception.Message);
             return false;

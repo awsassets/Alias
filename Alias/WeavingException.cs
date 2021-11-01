@@ -1,8 +1,8 @@
 using System;
 
-public class WeavingException : Exception
+class ErrorException : Exception
 {
-    public WeavingException(string message)
+    public ErrorException(string message)
         : base(message)
     {
     }
