@@ -1,7 +1,7 @@
 # <img src='/src/icon.png' height='30px'> Alias
 
-[![Build status](https://ci.appveyor.com/api/projects/status/dl7snkk70b964ke4/branch/master?svg=true)](https://ci.appveyor.com/project/SimonCropp/SimpleInfoName)
-[![NuGet Status](https://img.shields.io/nuget/v/SimpleInfoName.svg)](https://www.nuget.org/packages/SimpleInfoName/)
+[![Build status](https://ci.appveyor.com/api/projects/status/9es21v2yrcugyyxk/branch/master?svg=true)](https://ci.appveyor.com/project/SimonCropp/Alias)
+[![NuGet Status](https://img.shields.io/nuget/v/Alias.svg)](https://www.nuget.org/packages/Alias/)
 
 ## Icon
 
