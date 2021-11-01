@@ -14,7 +14,11 @@ public static class WeavingHelper
         var currentDirectory = AssemblyDirectoryHelper.GetCurrentDirectory();
         
         var fullPathReferences = references.Select(x => Path.Combine(currentDirectory, x)).ToList();
-        fullPathReferences.Add(typeof(string).Assembly.Location);
+#if(NET472)
+        fullPathReferences.Add(@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\mscorlib.dll");
+#else
+        fullPathReferences.Add(@"D:\NugetPackages\netstandard.library\2.0.3\build\netstandard2.0\ref\netstandard.dll");
+#endif
 
         var inputAssemblyPath = Path.Combine(currentDirectory, inputAssemblyName + ".dll");
 
