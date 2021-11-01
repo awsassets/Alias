@@ -15,7 +15,7 @@ public partial class Processor
 
     public virtual void FindStrongNameKey()
     {
-        if (!SignAssembly)
+        if (!signAssembly)
         {
             return;
         }
@@ -30,7 +30,7 @@ public partial class Processor
 
             var fileBytes = File.ReadAllBytes(keyFilePath);
 
-            if (!DelaySign)
+            if (!delaySign)
             {
                 try
                 {
@@ -62,11 +62,11 @@ public partial class Processor
 
     string? GetKeyFilePath()
     {
-        if (KeyFilePath != null)
+        if (keyFile != null)
         {
-            KeyFilePath = Path.GetFullPath(KeyFilePath);
-            logger.LogDebug($"Using strong name key from KeyFilePath '{KeyFilePath}'.");
-            return KeyFilePath;
+            keyFile = Path.GetFullPath(keyFile);
+            logger.LogDebug($"Using strong name key from KeyFilePath '{keyFile}'.");
+            return keyFile;
         }
 
         var assemblyKeyFileAttribute = ModuleDefinition

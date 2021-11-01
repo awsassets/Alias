@@ -26,12 +26,11 @@ public static class WeavingHelper
             new MockBuildLogger(),
             inputAssemblyPath, 
             currentDirectory,
-            string.Join(";", fullPathReferences))
-        {
-            AssembliesToAlias = includeAssemblies,
-            SignAssembly = true,
-            KeyFilePath = Path.Combine(AttributeReader.GetSolutionDirectory(), "Key.snk")
-        };
+            string.Join(";", fullPathReferences),
+            Path.Combine(AttributeReader.GetSolutionDirectory(), "Key.snk"),
+            true,
+            false,
+            includeAssemblies);
 
         processor.Execute();
 

@@ -27,7 +27,7 @@ public class AliasTask :
     public ITaskItem[] ReferenceCopyLocalFiles { get; set; } = null!;
 
     [Required]
-    public ITaskItem[] PackAssemblies { get; set; } = null!;
+    public ITaskItem[] AssembliesToAlias { get; set; } = null!;
 
     [Required]
     public string References { get; set; } = null!;
@@ -50,13 +50,11 @@ public class AliasTask :
                 buildLogger, 
                 AssemblyPath,
                 IntermediateDirectory,
-                References)
-            {
-                KeyFilePath = KeyOriginatorFile ?? AssemblyOriginatorKeyFile,
-                SignAssembly = SignAssembly,
-                DelaySign = DelaySign,
-                AssembliesToAlias = PackAssemblies.Select(x => x.ItemSpec).ToList()
-            };
+                References,
+                KeyOriginatorFile ?? AssemblyOriginatorKeyFile,
+                SignAssembly,
+                DelaySign,
+                AssembliesToAlias.Select(x => x.ItemSpec).ToList());
             processor.Execute();
             return !buildLogger.ErrorOccurred;
         }

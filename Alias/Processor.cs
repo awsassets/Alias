@@ -15,21 +15,29 @@ public partial class Processor
     string references;
     IAssemblyResolver assemblyResolver = null!;
     TypeCache TypeCache = null!;
-    public string? KeyFilePath;
-    public bool SignAssembly;
-    public bool DelaySign;
-    public List<string> AssembliesToAlias = null!;
+    string? keyFile;
+    bool signAssembly;
+    bool delaySign;
+    List<string> assembliesToAlias;
 
     public Processor(
         ILogger logger,
         string assemblyPath,
         string intermediateDirectory,
-        string references)
+        string references,
+        string? keyFile,
+        bool signAssembly,
+        bool delaySign,
+        List<string> assembliesToAlias)
     {
         this.logger = logger;
         this.assemblyPath = assemblyPath;
         this.intermediateDirectory = intermediateDirectory;
         this.references = references;
+        this.keyFile = keyFile;
+        this.signAssembly = signAssembly;
+        this.delaySign = delaySign;
+        this.assembliesToAlias = assembliesToAlias;
     }
 
     public void Execute()
@@ -52,7 +60,7 @@ public partial class Processor
             foreach (var reference in SplitReferences)
             {
                 var assemblyName = Path.GetFileNameWithoutExtension(reference);
-                if (!AssembliesToAlias.Contains(assemblyName))
+                if (!assembliesToAlias.Contains(assemblyName))
                 {
                     continue;
                 }
@@ -96,7 +104,7 @@ public partial class Processor
     void Redirect(ModuleDefinition targetModule)
     {
         var assemblyReferences = targetModule.AssemblyReferences;
-        foreach (var packAssembly in AssembliesToAlias)
+        foreach (var packAssembly in assembliesToAlias)
         {
             var toChange = assemblyReferences.SingleOrDefault(x => x.Name == packAssembly);
             //TODO: throw for invalid ref
