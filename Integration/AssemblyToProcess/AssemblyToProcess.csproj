@@ -11,5 +11,10 @@
     <AssembliesToAlias Include="AssemblyToReference" />
     <ProjectReference Include="..\AssemblyToReference\AssemblyToReference.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="$(ProjectDir)$(IntermediateOutputPath)*_Alias.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

@@ -38,14 +38,14 @@
         AssembliesToAlias="@(AssembliesToAlias)"
       >
         <Output
-          TaskParameter="NewReferencePaths"
-          PropertyName="NewReferencePaths" />
+          TaskParameter="PathsToRemove"
+          PropertyName="PathsToRemove" />
 
     </Alias.AliasTask>
 
     <ItemGroup>
       <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" />
-      <ReferenceCopyLocalPaths Include="@(NewReferencePaths)" />
+      <ReferenceCopyLocalPaths Include="$(ProjectDir)$(IntermediateOutputPath)\*_Alias.*" />
     </ItemGroup>
   </Target>
 

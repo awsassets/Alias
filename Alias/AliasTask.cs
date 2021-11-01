@@ -23,7 +23,7 @@ public class AliasTask :
 
     public bool SignAssembly { get; set; }
     public bool DelaySign { get; set; }
-    
+
     [Required]
     public ITaskItem[] ReferenceCopyLocalFiles { get; set; } = null!;
 
@@ -32,9 +32,9 @@ public class AliasTask :
 
     [Required]
     public string References { get; set; } = null!;
-    
+
     [Output]
-    public ITaskItem[] NewReferencePaths { get; set; } = null!;
+    public ITaskItem[] PathsToRemove { get; set; } = null!;
 
     public override bool Execute()
     {
@@ -48,7 +48,7 @@ public class AliasTask :
         try
         {
             processor = new(
-                buildLogger, 
+                buildLogger,
                 AssemblyPath,
                 IntermediateDirectory,
                 References,
@@ -57,22 +57,18 @@ public class AliasTask :
                 DelaySign,
                 AssembliesToAlias.Select(x => x.ItemSpec).ToList());
             var replacements = processor.Execute();
-            var newReferencePaths = new List<ITaskItem>(ReferenceCopyLocalFiles);
+            var pathsToRemove = new List<ITaskItem>();
+
             foreach (var replacement in replacements)
             {
-                var singleOrDefault = newReferencePaths.SingleOrDefault(x => x.ItemSpec == replacement.From);
-                if (singleOrDefault != null)
+                var taskItem = ReferenceCopyLocalFiles.SingleOrDefault(x => x.ItemSpec == replacement.From);
+                if (taskItem != null)
                 {
-                    newReferencePaths.Remove(singleOrDefault);
+                    pathsToRemove.Add(taskItem);
                 }
             }
 
-            foreach (var toAdd in replacements)
-            {
-                newReferencePaths.Add(new TaskItem(toAdd.To));
-            }
-
-            NewReferencePaths = newReferencePaths.ToArray();
+            PathsToRemove = pathsToRemove.ToArray();
 
             return true;
         }
