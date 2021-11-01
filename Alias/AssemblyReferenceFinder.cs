@@ -11,9 +11,9 @@ public partial class Processor
         SplitReferences = References
             .Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries)
             .ToList();
-        Logger.LogDebug("Reference count: " + SplitReferences.Count);
+        logger.LogDebug("Reference count: " + SplitReferences.Count);
 
         var joinedReferences = string.Join(Environment.NewLine + "  ", SplitReferences.OrderBy(x => x));
-        Logger.LogDebug($"References:{Environment.NewLine} {joinedReferences}");
+        logger.LogDebug($"References:{Environment.NewLine} {joinedReferences}");
     }
 }

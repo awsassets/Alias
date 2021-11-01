@@ -22,13 +22,12 @@ public static class WeavingHelper
 
         var inputAssemblyPath = Path.Combine(currentDirectory, inputAssemblyName + ".dll");
 
-        var processor = new Processor
+        var processor = new Processor(new MockBuildLogger())
         {
             AssemblyPath = inputAssemblyPath,
             IntermediateDirectory = currentDirectory,
-            Logger = new MockBuildLogger(),
             References = string.Join(";", fullPathReferences),
-            PackAssemblies = includeAssemblies,
+            AssembliesToAlias = includeAssemblies,
             SignAssembly = true,
             KeyFilePath = Path.Combine(AttributeReader.GetSolutionDirectory(), "Key.snk")
         };

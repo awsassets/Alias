@@ -34,7 +34,7 @@ public partial class Processor
             {
                 try
                 {
-                    Logger.LogDebug("Extract public key from key file for signing.");
+                    logger.LogDebug("Extract public key from key file for signing.");
 
                     StrongNameKeyPair = new(fileBytes);
                     // Ensure that we can generate the public key from the key file. This requires the private key to
@@ -46,12 +46,12 @@ public partial class Processor
                 }
                 catch (ArgumentException)
                 {
-                    Logger.LogWarning("Failed to extract public key from key file, fall back to delay-signing.");
+                    logger.LogWarning("Failed to extract public key from key file, fall back to delay-signing.");
                 }
             }
 
             // Fall back to delay signing, this was the original behavior, however that does not work in NETSTANDARD (s.a.)
-            Logger.LogDebug("Prepare public key for delay-signing.");
+            logger.LogDebug("Prepare public key for delay-signing.");
 
             // We know that we cannot sign the assembly with this key-file. Let's assume that it is a public
             // only key-file and pass along all the bytes.
@@ -65,7 +65,7 @@ public partial class Processor
         if (KeyFilePath != null)
         {
             KeyFilePath = Path.GetFullPath(KeyFilePath);
-            Logger.LogDebug($"Using strong name key from KeyFilePath '{KeyFilePath}'.");
+            logger.LogDebug($"Using strong name key from KeyFilePath '{KeyFilePath}'.");
             return KeyFilePath;
         }
 
@@ -77,11 +77,11 @@ public partial class Processor
         {
             var keyFileSuffix = (string)assemblyKeyFileAttribute.ConstructorArguments.First().Value;
             var keyFilePath = Path.Combine(IntermediateDirectory, keyFileSuffix);
-            Logger.LogDebug($"Using strong name key from [AssemblyKeyFileAttribute(\"{keyFileSuffix}\")] '{keyFilePath}'");
+            logger.LogDebug($"Using strong name key from [AssemblyKeyFileAttribute(\"{keyFileSuffix}\")] '{keyFilePath}'");
             return keyFilePath;
         }
 
-        Logger.LogDebug("No strong name key found");
+        logger.LogDebug("No strong name key found");
         return null;
     }
 }

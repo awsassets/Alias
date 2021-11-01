@@ -22,12 +22,18 @@ public class AliasTask :
 
     public bool SignAssembly { get; set; }
     public bool DelaySign { get; set; }
+    
+    [Required]
+    public ITaskItem[] ReferenceCopyLocalFiles { get; set; } = null!;
 
     [Required]
     public ITaskItem[] PackAssemblies { get; set; } = null!;
 
     [Required]
     public string References { get; set; } = null!;
+    
+    [Output]
+    public ITaskItem[] NewReferencePaths { get; set; } = null!;
 
     public override bool Execute()
     {
@@ -40,16 +46,15 @@ public class AliasTask :
 
         try
         {
-            processor = new()
+            processor = new(buildLogger)
             {
-                Logger = buildLogger,
                 AssemblyPath = AssemblyPath,
                 IntermediateDirectory = IntermediateDirectory,
                 KeyFilePath = KeyOriginatorFile ?? AssemblyOriginatorKeyFile,
                 SignAssembly = SignAssembly,
                 DelaySign = DelaySign,
                 References = References,
-                PackAssemblies = PackAssemblies.Select(x => x.ItemSpec).ToList()
+                AssembliesToAlias = PackAssemblies.Select(x => x.ItemSpec).ToList()
             };
             processor.Execute();
             return !buildLogger.ErrorOccurred;

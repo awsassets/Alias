@@ -11,23 +11,21 @@ public partial class Processor
         hasSymbols = result.hasSymbols;
         if (!hasSymbols)
         {
-            Logger.LogInfo("Module has no debug symbols.");
+            logger.LogInfo("Module has no debug symbols.");
         }
 
         ModuleDefinition = result.module;
     }
 
-    public static (ModuleDefinition module, bool hasSymbols) ReadModule(
-        string assemblyFilePath,
-        IAssemblyResolver assemblyResolver)
+    public static (ModuleDefinition module, bool hasSymbols) ReadModule(string assemblyFile, IAssemblyResolver resolver)
     {
         var readerParameters = new ReaderParameters
         {
-            AssemblyResolver = assemblyResolver,
+            AssemblyResolver = resolver,
             InMemory = true
         };
 
-        var module = ModuleDefinition.ReadModule(assemblyFilePath, readerParameters);
+        var module = ModuleDefinition.ReadModule(assemblyFile, readerParameters);
 
         var hasSymbols = false;
         try

@@ -35,17 +35,18 @@
         References="@(ReferencePath)"
         SignAssembly="$(SignAssembly)"
         DelaySign="$(DelaySign)"
+        ReferenceCopyLocalFiles="@(ReferenceCopyLocalPaths)"
         AssembliesToAlias="@(AssembliesToAlias)"
       >
         <Output
-          TaskParameter="AliasedAssemblies"
-          PropertyName="AliasedAssemblies" />
+          TaskParameter="NewReferencePaths"
+          PropertyName="NewReferencePaths" />
 
     </Alias.AliasTask>
 
     <ItemGroup>
-      <ReferenceCopyLocalPaths Remove="@(AssembliesToAlias)" />
-      <ReferenceCopyLocalPaths Include="@(AliasedAssemblies)" />
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" />
+      <ReferenceCopyLocalPaths Include="@(NewReferencePaths)" />
     </ItemGroup>
   </Target>
 

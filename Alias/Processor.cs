@@ -9,6 +9,7 @@ using TypeAttributes = Mono.Cecil.TypeAttributes;
 
 public partial class Processor
 {
+    ILogger logger;
     IAssemblyResolver assemblyResolver = null!;
     TypeCache TypeCache = null!;
     public string AssemblyPath = null!;
@@ -18,20 +19,23 @@ public partial class Processor
     public bool DelaySign;
     public string References = null!;
 
-    public ILogger Logger = null!;
-    public List<string> PackAssemblies = null!;
+    public List<string> AssembliesToAlias = null!;
 
+    public Processor(ILogger logger)
+    {
+        this.logger = logger;
+    }
     public void Execute()
     {
         try
         {
             SplitUpReferences();
-            assemblyResolver = new AssemblyResolver(Logger, SplitReferences);
+            assemblyResolver = new AssemblyResolver(logger, SplitReferences);
             ReadModule();
             var infoClassName = GetInfoClassName();
             if (ModuleDefinition.Types.Any(x => x.Name == infoClassName))
             {
-                Logger.LogWarning($"Already processed by Alias. Path: {AssemblyPath}");
+                logger.LogWarning($"Already processed by Alias. Path: {AssemblyPath}");
                 return;
             }
 
@@ -41,7 +45,7 @@ public partial class Processor
             foreach (var reference in SplitReferences)
             {
                 var assemblyName = Path.GetFileNameWithoutExtension(reference);
-                if (!PackAssemblies.Contains(assemblyName))
+                if (!AssembliesToAlias.Contains(assemblyName))
                 {
                     continue;
                 }
@@ -85,7 +89,7 @@ public partial class Processor
     void Redirect(ModuleDefinition targetModule)
     {
         var assemblyReferences = targetModule.AssemblyReferences;
-        foreach (var packAssembly in PackAssemblies)
+        foreach (var packAssembly in AssembliesToAlias)
         {
             var toChange = assemblyReferences.SingleOrDefault(x => x.Name == packAssembly);
             //TODO: throw for invalid ref
