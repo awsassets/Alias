@@ -6,7 +6,7 @@ public partial class Processor
 {
     public List<string> SplitReferences = null!;
 
-    public virtual void SplitUpReferences()
+    public void SplitUpReferences()
     {
         SplitReferences = references
             .Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries)
