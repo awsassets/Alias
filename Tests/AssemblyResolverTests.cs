@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using DummyAssembly;
 using Xunit;
@@ -31,13 +30,6 @@ public class AssemblyResolverTests
     public void ShouldReturnNullWhenTheAssemblyIsNotFound()
     {
         var resolver = new AssemblyResolver(logger, Enumerable.Empty<string>());
-        Assert.Null(TypeCache.ResolveIgnoreVersion(resolver,"SomeNonExistingAssembly"));
-    }
-
-    [Fact]
-    public void ShouldGuessTheAssemblyNameFromTheFileNameIfTheAssemblyCannotBeLoaded()
-    {
-        var resolver = new AssemblyResolver(logger, new[] { @"AssemblyPack\BadAssembly.dll" });
-        Assert.ThrowsAny<Exception>(() => TypeCache.ResolveIgnoreVersion(resolver,"BadAssembly"));
+        Assert.Null(TypeCache.ResolveIgnoreVersion(resolver, "SomeNonExistingAssembly"));
     }
 }
