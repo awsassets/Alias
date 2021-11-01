@@ -58,14 +58,10 @@ public partial class Processor
 
                 module.Assembly.Name = name;
                 referenceModules.Add(new(module, name));
+                Redirect(module);
             }
 
             Redirect(ModuleDefinition);
-
-            foreach (var referenceModule in referenceModules)
-            {
-                Redirect(referenceModule.module);
-            }
 
             foreach (var referenceModule in referenceModules)
             {
