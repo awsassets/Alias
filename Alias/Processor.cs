@@ -46,16 +46,19 @@ public partial class Processor
                     continue;
                 }
 
-                var referenceModule = ReadModule(reference, assemblyResolver);
-                var module = referenceModule.module;
+                var (module, hasSymbols) = ReadModule(reference, assemblyResolver);
 
-                var name = new AssemblyNameDefinition($"{module.Assembly.Name.Name}_Alias", module.Assembly.Name.Version);
-                if (PublicKey != null)
+                var name = module.Assembly.Name;
+                name.Name += "_Alias";
+                if (PublicKey == null)
+                {
+                    name.PublicKey = Array.Empty<byte>();
+                }
+                else
                 {
                     name.PublicKey = PublicKey;
                 }
 
-                module.Assembly.Name = name;
                 Redirect(module);
                 
                 var parameters = new WriterParameters
@@ -64,8 +67,7 @@ public partial class Processor
                     WriteSymbols = hasSymbols
                 };
 
-                module.Assembly.Name.PublicKey = PublicKey;
-                module.Write(Path.Combine(IntermediateDirectory, module.Assembly.Name.Name + ".dll"), parameters);
+                module.Write(Path.Combine(IntermediateDirectory, name.Name + ".dll"), parameters);
             }
 
             Redirect(ModuleDefinition);
