@@ -38,7 +38,6 @@ public partial class Processor
             TypeCache = new(ModuleDefinition, assemblyResolver);
             AddWeavingInfo(infoClassName);
             FindStrongNameKey();
-            var referenceModules = new List<(ModuleDefinition module, AssemblyNameDefinition nameDefinition)>();
             foreach (var reference in SplitReferences)
             {
                 var assemblyName = Path.GetFileNameWithoutExtension(reference);
@@ -57,24 +56,19 @@ public partial class Processor
                 }
 
                 module.Assembly.Name = name;
-                referenceModules.Add(new(module, name));
                 Redirect(module);
-            }
-
-            Redirect(ModuleDefinition);
-
-            foreach (var referenceModule in referenceModules)
-            {
-                var moduleModule = referenceModule.module;
+                
                 var parameters = new WriterParameters
                 {
                     StrongNameKeyPair = StrongNameKeyPair,
                     WriteSymbols = hasSymbols
                 };
 
-                moduleModule.Assembly.Name.PublicKey = PublicKey;
-                moduleModule.Write(Path.Combine(IntermediateDirectory, moduleModule.Assembly.Name.Name + ".dll"), parameters);
+                module.Assembly.Name.PublicKey = PublicKey;
+                module.Write(Path.Combine(IntermediateDirectory, module.Assembly.Name.Name + ".dll"), parameters);
             }
+
+            Redirect(ModuleDefinition);
 
             WriteModule();
             ModuleDefinition?.Dispose();
