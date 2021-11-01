@@ -10,21 +10,28 @@ using TypeAttributes = Mono.Cecil.TypeAttributes;
 public partial class Processor
 {
     ILogger logger;
+    string assemblyPath;
+    string intermediateDirectory;
+    string references;
     IAssemblyResolver assemblyResolver = null!;
     TypeCache TypeCache = null!;
-    public string AssemblyPath = null!;
-    public string IntermediateDirectory = null!;
     public string? KeyFilePath;
     public bool SignAssembly;
     public bool DelaySign;
-    public string References = null!;
-
     public List<string> AssembliesToAlias = null!;
 
-    public Processor(ILogger logger)
+    public Processor(
+        ILogger logger,
+        string assemblyPath,
+        string intermediateDirectory,
+        string references)
     {
         this.logger = logger;
+        this.assemblyPath = assemblyPath;
+        this.intermediateDirectory = intermediateDirectory;
+        this.references = references;
     }
+
     public void Execute()
     {
         try
@@ -35,7 +42,7 @@ public partial class Processor
             var infoClassName = GetInfoClassName();
             if (ModuleDefinition.Types.Any(x => x.Name == infoClassName))
             {
-                logger.LogWarning($"Already processed by Alias. Path: {AssemblyPath}");
+                logger.LogWarning($"Already processed by Alias. Path: {assemblyPath}");
                 return;
             }
 
@@ -71,7 +78,7 @@ public partial class Processor
                     WriteSymbols = hasSymbols
                 };
 
-                module.Write(Path.Combine(IntermediateDirectory, name.Name + ".dll"), parameters);
+                module.Write(Path.Combine(intermediateDirectory, name.Name + ".dll"), parameters);
             }
 
             Redirect(ModuleDefinition);

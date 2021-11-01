@@ -76,7 +76,7 @@ public partial class Processor
         if (assemblyKeyFileAttribute != null)
         {
             var keyFileSuffix = (string)assemblyKeyFileAttribute.ConstructorArguments.First().Value;
-            var keyFilePath = Path.Combine(IntermediateDirectory, keyFileSuffix);
+            var keyFilePath = Path.Combine(intermediateDirectory, keyFileSuffix);
             logger.LogDebug($"Using strong name key from [AssemblyKeyFileAttribute(\"{keyFileSuffix}\")] '{keyFilePath}'");
             return keyFilePath;
         }

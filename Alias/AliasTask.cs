@@ -46,14 +46,15 @@ public class AliasTask :
 
         try
         {
-            processor = new(buildLogger)
+            processor = new(
+                buildLogger, 
+                AssemblyPath,
+                IntermediateDirectory,
+                References)
             {
-                AssemblyPath = AssemblyPath,
-                IntermediateDirectory = IntermediateDirectory,
                 KeyFilePath = KeyOriginatorFile ?? AssemblyOriginatorKeyFile,
                 SignAssembly = SignAssembly,
                 DelaySign = DelaySign,
-                References = References,
                 AssembliesToAlias = PackAssemblies.Select(x => x.ItemSpec).ToList()
             };
             processor.Execute();

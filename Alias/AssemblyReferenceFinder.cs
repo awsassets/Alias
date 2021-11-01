@@ -8,7 +8,7 @@ public partial class Processor
 
     public virtual void SplitUpReferences()
     {
-        SplitReferences = References
+        SplitReferences = references
             .Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries)
             .ToList();
         logger.LogDebug("Reference count: " + SplitReferences.Count);
