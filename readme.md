@@ -5,4 +5,4 @@
 
 ## Icon
 
-[Complex](https://thenounproject.com/term/complex/2270599/) designed by [auttapol](https://thenounproject.com/monsterku69) from [The Noun Project](https://thenounproject.com).
+[Woman](https://thenounproject.com/term/woman/3424720/) designed by [Maludk](https://thenounproject.com/Maludk) from [The Noun Project](https://thenounproject.com).
