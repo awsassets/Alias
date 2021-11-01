@@ -92,7 +92,6 @@ public partial class Processor
             Redirect(ModuleDefinition);
 
             WriteModule();
-            ModuleDefinition?.Dispose();
         }
         finally
         {
