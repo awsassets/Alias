@@ -1,12 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <DebugType>embedded</DebugType>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Alias" Version="$(IntegrationVersion)" />
+    <AssembliesToAlias Include="AssemblyToReference" />
     <ProjectReference Include="..\AssemblyToReference\AssemblyToReference.csproj" />
-    <PackAssemblies Include="AssemblyToReference" />
   </ItemGroup>
+
 </Project>

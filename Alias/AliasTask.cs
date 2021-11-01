@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Build.Framework;
@@ -43,7 +44,7 @@ public class AliasTask :
         buildLogger.LogInfo($"Alias (version {assembly.GetName().Version} @ {assembly.CodeBase}) Executing");
 
         var stopwatch = Stopwatch.StartNew();
-
+        Debugger.Launch();
         try
         {
             processor = new(
@@ -55,7 +56,24 @@ public class AliasTask :
                 SignAssembly,
                 DelaySign,
                 AssembliesToAlias.Select(x => x.ItemSpec).ToList());
-            processor.Execute();
+            var replacements = processor.Execute();
+            var newReferencePaths = new List<ITaskItem>(ReferenceCopyLocalFiles);
+            foreach (var replacement in replacements)
+            {
+                var singleOrDefault = newReferencePaths.SingleOrDefault(x => x.ItemSpec == replacement.From);
+                if (singleOrDefault != null)
+                {
+                    newReferencePaths.Remove(singleOrDefault);
+                }
+            }
+
+            foreach (var toAdd in replacements)
+            {
+                newReferencePaths.Add(new TaskItem(toAdd.To));
+            }
+
+            NewReferencePaths = newReferencePaths.ToArray();
+
             return true;
         }
         catch (ErrorException exception)

@@ -6,7 +6,13 @@ using System.Reflection;
 using Mono.Cecil;
 using FieldAttributes = Mono.Cecil.FieldAttributes;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
+// ReSharper disable once CheckNamespace
+namespace System.Runtime.CompilerServices
+{
+    internal static class IsExternalInit { }
+}
 
+public record Replacement(string From, string To);
 public partial class Processor
 {
     ILogger logger;
@@ -40,8 +46,9 @@ public partial class Processor
         this.assembliesToAlias = assembliesToAlias;
     }
 
-    public void Execute()
+    public IReadOnlyList<Replacement> Execute()
     {
+        var replacements = new List<Replacement>();
         try
         {
             SplitUpReferences();
@@ -50,8 +57,7 @@ public partial class Processor
             var infoClassName = GetInfoClassName();
             if (ModuleDefinition.Types.Any(x => x.Name == infoClassName))
             {
-                logger.LogWarning($"Already processed by Alias. Path: {assemblyPath}");
-                return;
+                throw new WarningException($"Already processed by Alias. Path: {assemblyPath}");
             }
 
             TypeCache = new(ModuleDefinition, assemblyResolver);
@@ -64,7 +70,6 @@ public partial class Processor
                 {
                     continue;
                 }
-
                 var (module, hasSymbols) = ReadModule(reference, assemblyResolver);
 
                 var name = module.Assembly.Name;
@@ -86,12 +91,21 @@ public partial class Processor
                     WriteSymbols = hasSymbols
                 };
 
-                module.Write(Path.Combine(intermediateDirectory, name.Name + ".dll"), parameters);
+                var fileName = Path.Combine(intermediateDirectory, $"{name.Name}.dll");
+
+                replacements.Add(new(reference, fileName));
+                if (hasSymbols)
+                {
+                    replacements.Add(new(Path.ChangeExtension(reference,".pdb"), Path.ChangeExtension(fileName, ".pdb")));
+                }
+                module.Write(fileName, parameters);
             }
 
             Redirect(ModuleDefinition);
 
             WriteModule();
+
+            return replacements;
         }
         finally
         {

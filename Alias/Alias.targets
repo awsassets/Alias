@@ -31,7 +31,6 @@
         IntermediateDirectory="$(ProjectDir)$(IntermediateOutputPath)"
         KeyOriginatorFile="$(KeyOriginatorFile)"
         AssemblyOriginatorKeyFile="$(AssemblyOriginatorKeyFile)"
-        ProjectDirectory="$(MSBuildProjectDirectory)"
         References="@(ReferencePath)"
         SignAssembly="$(SignAssembly)"
         DelaySign="$(DelaySign)"
