@@ -89,9 +89,9 @@ public partial class Processor
         }
     }
 
-    void Redirect(ModuleDefinition moduleDefinition, List<(ModuleDefinition module, AssemblyNameDefinition nameDefinition)> referenceModules)
+    void Redirect(ModuleDefinition targetModule, List<(ModuleDefinition module, AssemblyNameDefinition nameDefinition)> referenceModules)
     {
-        var assemblyReferences = moduleDefinition.AssemblyReferences;
+        var assemblyReferences = targetModule.AssemblyReferences;
         foreach (var packAssembly in PackAssemblies)
         {
             var toChange = assemblyReferences.SingleOrDefault(x => x.Name == packAssembly);
