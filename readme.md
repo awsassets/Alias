@@ -24,7 +24,7 @@ Ensure [dotnet CLI is installed](https://docs.microsoft.com/en-us/dotnet/core/to
 Install [Alias](https://nuget.org/packages/Alias/)
 
 ```ps
-dotnet tool install --global Alias --version 0.1.0-beta.4
+dotnet tool install --global Alias --version 0.1.0-beta.5
 ```
 
 
