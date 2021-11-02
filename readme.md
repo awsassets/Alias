@@ -13,8 +13,8 @@ Rename assemblies and fixes references.
 For a given directory and a subset of assembly names to "alias"
 
  * Changes the assembly name of each "alias" assembly.
- * Renames "alias" assembly on disk.
- * For all assemblies, fixes the references to point to the new alias assebmlies.
+ * Renames "alias" assemblies on disk.
+ * For all assemblies, fixes the references to point to the new alias assemblies.
 
 Both the assembly name and file name changes are currently hardcoded to add the suffix `_Alias`. This will be configurable in a future version.
 
