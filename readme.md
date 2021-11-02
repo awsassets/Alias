@@ -16,6 +16,8 @@ For a given directory and a subset of assembly names to "alias"
  * Renames "alias" assembly on disk.
  * For all assemblies, fixes the references to point to the new alias assebmlies.
 
+Both the assembly name and file name changes are currently hardcoded to add the suffix `_Alias`. This will be configurable in a future version.
+
 
 ## Installation
 
