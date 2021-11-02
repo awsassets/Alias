@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net5;net6</TargetFrameworks>
-    <ToolCommandName>alias</ToolCommandName>
+    <ToolCommandName>assemblyalias</ToolCommandName>
     <PackAsTool>True</PackAsTool>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
