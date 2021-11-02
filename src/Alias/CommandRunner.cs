@@ -2,28 +2,27 @@
 
 static class CommandRunner
 {
-    public static Task RunCommand(Invoke invoke, params string[] args)
+    public static int RunCommand(Invoke invoke, params string[] args)
     {
         return Parser.Default.ParseArguments<Options>(args)
-            .WithParsedAsync(
-                options =>
-                {
+            .MapResult(
+                options => {
                     var targetDirectory = FindTargetDirectory(options.TargetDirectory);
-                    return invoke(targetDirectory, options.Assemblies,options.Key);
-                });
+                    try
+                    {
+                        invoke(targetDirectory, options.AssembliesToAlias, options.Key);
+                    }
+                    catch (Error e)
+                    {
+                        Console.WriteLine(e);
+                        return 1;
+                    }
+                    return 0;
+                },
+                _ => 1);
     }
 
-    static async Task<ParserResult<T>> WithParsedAsync<T>(
-        this ParserResult<T> result,
-        Func<T, Task> action)
-    {
-        if (result is Parsed<T> parsed)
-        {
-            await action(parsed.Value);
-        }
 
-        return result;
-    }
     static string FindTargetDirectory(string? targetDirectory)
     {
         if (targetDirectory == null)

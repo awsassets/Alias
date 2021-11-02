@@ -7,7 +7,7 @@ using Xunit;
 [UsesVerify]
 public class Tests
 {
-    public async Task<List<AssemblyResult>> Run(bool copyPdbs, bool sign)
+    public List<AssemblyResult> Run(bool copyPdbs, bool sign)
     {
         var binDirectory = Path.GetDirectoryName(typeof(Tests).Assembly.Location)!;
 
@@ -48,7 +48,7 @@ public class Tests
             keyFile = Path.Combine(AttributeReader.GetProjectDirectory(), "test.snk");
         }
 
-        await Program.Inner(tempPath, assemblyFiles.Where(x => x.StartsWith("AssemblyWith")), keyFile);
+        Program.Inner(tempPath, assemblyFiles.Where(x => x.StartsWith("AssemblyWith")), keyFile);
 
         var resultingFiles = Directory.EnumerateFiles(tempPath);
         var results = new List<AssemblyResult>();
@@ -56,7 +56,7 @@ public class Tests
         {
             using var definition = AssemblyDefinition.ReadAssembly(assembly);
             results.Add(
-                new AssemblyResult(
+                new(
                     definition.Name.FullName,
                     definition.MainModule.TryReadSymbols(),
                     definition.MainModule.AssemblyReferences.Select(x => x.FullName).ToList()));

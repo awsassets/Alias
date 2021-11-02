@@ -4,25 +4,25 @@ using StrongNameKeyPair = Mono.Cecil.StrongNameKeyPair;
 
 public static class Program
 {
-    static Task Main(string[] args)
+    static void Main(string[] args)
     {
-        return CommandRunner.RunCommand(
+        CommandRunner.RunCommand(
             (targetDirectory, assemblyNamesToAliases, keyFile) =>
             {
                 Console.WriteLine($"TargetDirectory: {targetDirectory}");
                 Console.WriteLine($"AssembliesToAlias: {assemblyNamesToAliases}");
                 Console.WriteLine($"KeyFile: {keyFile}");
 
-                return Inner(targetDirectory, assemblyNamesToAliases.Split(";"), keyFile);
+                Inner(targetDirectory, assemblyNamesToAliases.Split(";"), keyFile);
             }, 
             args);
     }
 
-    public static Task Inner(string targetDirectory, IEnumerable<string> assemblyNamesToAliases, string? keyFile)
+    public static void Inner(string targetDirectory, IEnumerable<string> assemblyNamesToAliases, string? keyFile)
     {
         if (!Directory.Exists(targetDirectory))
         {
-            throw new($"Target directory does not exist: {targetDirectory}");
+            throw new Error($"Target directory does not exist: {targetDirectory}");
         }
 
         StrongNameKeyPair? keyPair = null;
@@ -31,7 +31,7 @@ public static class Program
         {
             if (!File.Exists(keyFile))
             {
-                throw new($"KeyFile directory does not exist: {keyFile}");
+                throw new Error($"KeyFile directory does not exist: {keyFile}");
             }
 
             var fileBytes = File.ReadAllBytes(keyFile);
@@ -52,13 +52,13 @@ public static class Program
         {
             if (string.IsNullOrWhiteSpace(assemblyToAlias))
             {
-                throw new("Empty string in assembliesToAliasString");
+                throw new Error("Empty string in assembliesToAliasString");
             }
 
-            void ProcessItem(List<FileAssembly> fileAssemblies, FileAssembly item, List<AssemblyAlias> assemblyAliases)
+            static void ProcessItem(List<FileAssembly> fileAssemblies, FileAssembly item, List<AssemblyAlias> assemblyAliases)
             {
                 fileAssemblies.Remove(item);
-                assemblyAliases.Add(new AssemblyAlias(item.Name, item.Path, item.Name + "_Alias", item.Path.Replace(".dll", "_Alias.dll")));
+                assemblyAliases.Add(new(item.Name, item.Path, item.Name + "_Alias", item.Path.Replace(".dll", "_Alias.dll")));
             }
 
             if (assemblyToAlias.EndsWith("*"))
@@ -74,7 +74,7 @@ public static class Program
                 var item = assembliesToPatch.SingleOrDefault(x => x.Name == assemblyToAlias);
                 if (item == null)
                 {
-                    throw new($"Could not find {assemblyToAlias} in {targetDirectory}.");
+                    throw new Error($"Could not find {assemblyToAlias} in {targetDirectory}.");
                 }
 
                 ProcessItem(assembliesToPatch, item, assembliesToAlias);
@@ -112,8 +112,6 @@ public static class Program
         {
             File.Delete(assembly.FromPath);
         }
-
-        return Task.CompletedTask;
     }
 
     static void FixKey(StrongNameKeyPair? key, AssemblyNameDefinition name)
@@ -144,4 +142,3 @@ public static class Program
         }
     }
 }
-
