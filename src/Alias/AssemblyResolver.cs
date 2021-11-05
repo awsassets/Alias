@@ -2,30 +2,30 @@ using Mono.Cecil;
 
 public class AssemblyResolver : IAssemblyResolver
 {
-    Dictionary<string, string> referenceDictionary;
     Dictionary<string, AssemblyDefinition> assemblyDefinitionCache = new(StringComparer.InvariantCultureIgnoreCase);
+
+    ReaderParameters readerParameters = new(ReadingMode.Deferred)
+    {
+        ReadSymbols = false
+    };
 
     public AssemblyResolver()
     {
         var assemblyLocation = typeof(AssemblyResolver).Assembly.Location;
         var directory = Path.GetDirectoryName(assemblyLocation)!;
-        referenceDictionary = new()
+        var netStandardPath = Path.Combine(directory, "netstandard.dll");
+
+        assemblyDefinitionCache = new()
         {
-            ["netstandard"] = Path.Combine(directory, "netstandard.dll")
+            ["netstandard"] = GetAssembly(netStandardPath)
         };
     }
-    
-    AssemblyDefinition GetAssembly(string file, ReaderParameters parameters)
-    {
-        if (assemblyDefinitionCache.TryGetValue(file, out var assembly))
-        {
-            return assembly;
-        }
 
-        parameters.AssemblyResolver ??= this;
+    AssemblyDefinition GetAssembly(string file)
+    {
         try
         {
-            return assemblyDefinitionCache[file] = AssemblyDefinition.ReadAssembly(file, parameters);
+            return AssemblyDefinition.ReadAssembly(file, readerParameters);
         }
         catch (Exception exception)
         {
@@ -40,11 +40,9 @@ public class AssemblyResolver : IAssemblyResolver
 
     public AssemblyDefinition? Resolve(AssemblyNameReference assemblyNameReference, ReaderParameters? parameters)
     {
-        parameters ??= new();
-
-        if (referenceDictionary.TryGetValue(assemblyNameReference.Name, out var fileFromDerivedReferences))
+        if (assemblyDefinitionCache.TryGetValue(assemblyNameReference.Name, out var assembly))
         {
-            return GetAssembly(fileFromDerivedReferences, parameters);
+            return assembly;
         }
 
         return null;
