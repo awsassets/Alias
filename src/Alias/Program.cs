@@ -32,8 +32,8 @@ public static class Program
             keyPair = new(fileBytes);
             publicKey = keyPair.PublicKey;
         }
-
-        var allFiles = Directory.GetFiles(directory, "*.dll").ToList();
+        
+        var allFiles = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories).ToList();
 
         var assembliesToPatch = allFiles
             .Select(x => new FileAssembly(Path.GetFileNameWithoutExtension(x), x))
