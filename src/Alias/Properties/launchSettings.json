@@ -2,7 +2,7 @@
   "profiles": {
     "Alias": {
       "commandName": "Project",
-      "commandLineArgs": "--target-directory D:\\Code\\sentry\\sentry-unity\\package-dev\\Runtime --assemblies Microsoft*;System* "
+      "commandLineArgs": "--target-directory D:\\Code\\sentry\\sentry-unity\\package-dev\\Tests\\Runtime --assemblies-to-alias Microsoft*;System* "
     }
   }
 }

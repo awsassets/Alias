@@ -76,6 +76,9 @@ public static class Program
 
         using var resolver = new AssemblyResolver(references);
         {
+            var assembliesToCleanup = new List<ModuleDefinition>();
+            var writes = new List<Action>();
+
             foreach (var assembly in assembliesToAlias)
             {
                 var assemblyTargetPath = assembly.TargetPath;
@@ -86,8 +89,9 @@ public static class Program
                 name.Name += "_Alias";
                 FixKey(keyPair, name);
                 Redirect(module, assembliesToAlias, publicKey);
-                ModuleReaderWriter.Write(keyPair, hasSymbols, module, assemblyTargetPath);
-                module.Dispose();
+                resolver.Add(module);
+                writes.Add(() => ModuleReaderWriter.Write(keyPair, hasSymbols, module, assemblyTargetPath));
+                assembliesToCleanup.Add(module);
             }
 
             foreach (var assembly in assembliesToPatch)
@@ -97,10 +101,23 @@ public static class Program
 
                 FixKey(keyPair, module.Assembly.Name);
                 Redirect(module, assembliesToAlias, publicKey);
-                ModuleReaderWriter.Write(keyPair, hasSymbols, module, assemblyPath);
-                module.Dispose();
+                resolver.Add(module);
+
+                writes.Add(() => ModuleReaderWriter.Write(keyPair, hasSymbols, module, assemblyPath));
+                assembliesToCleanup.Add(module);
+            }
+
+            foreach (var write in writes)
+            {
+                write();
+            }
+
+            foreach (var assembly in assembliesToCleanup)
+            {
+                assembly.Dispose();
             }
         }
+
         foreach (var assembly in assembliesToAlias)
         {
             File.Delete(assembly.SourcePath);

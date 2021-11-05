@@ -15,15 +15,23 @@ public class AssemblyResolver : IAssemblyResolver
         var directory = Path.GetDirectoryName(assemblyLocation)!;
         var netStandardPath = Path.Combine(directory, "netstandard.dll");
 
+        var netStandard = GetAssembly(netStandardPath);
         cache = new()
         {
-            ["netstandard"] = GetAssembly(netStandardPath)
+            ["netstandard"] = netStandard,
+            ["mscorlib"] = netStandard,
         };
         foreach (var reference in references)
         {
             var assembly = GetAssembly(reference);
             cache[assembly.Name.Name] = assembly;
         }
+    }
+
+    public void Add(ModuleDefinition module)
+    {
+        var assembly = module.Assembly;
+        cache[assembly.Name.Name] = assembly;
     }
 
     AssemblyDefinition GetAssembly(string file)
