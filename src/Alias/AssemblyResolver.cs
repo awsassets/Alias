@@ -2,23 +2,28 @@ using Mono.Cecil;
 
 public class AssemblyResolver : IAssemblyResolver
 {
-    Dictionary<string, AssemblyDefinition> assemblyDefinitionCache = new(StringComparer.InvariantCultureIgnoreCase);
+    Dictionary<string, AssemblyDefinition> cache = new(StringComparer.InvariantCultureIgnoreCase);
 
     ReaderParameters readerParameters = new(ReadingMode.Deferred)
     {
         ReadSymbols = false
     };
 
-    public AssemblyResolver()
+    public AssemblyResolver(IEnumerable<string> references)
     {
         var assemblyLocation = typeof(AssemblyResolver).Assembly.Location;
         var directory = Path.GetDirectoryName(assemblyLocation)!;
         var netStandardPath = Path.Combine(directory, "netstandard.dll");
 
-        assemblyDefinitionCache = new()
+        cache = new()
         {
             ["netstandard"] = GetAssembly(netStandardPath)
         };
+        foreach (var reference in references)
+        {
+            var assembly = GetAssembly(reference);
+            cache[assembly.Name.Name] = assembly;
+        }
     }
 
     AssemblyDefinition GetAssembly(string file)
@@ -33,14 +38,14 @@ public class AssemblyResolver : IAssemblyResolver
         }
     }
 
-    public AssemblyDefinition? Resolve(AssemblyNameReference assemblyNameReference)
+    public AssemblyDefinition? Resolve(AssemblyNameReference name)
     {
-        return Resolve(assemblyNameReference, new());
+        return Resolve(name, new());
     }
 
-    public AssemblyDefinition? Resolve(AssemblyNameReference assemblyNameReference, ReaderParameters? parameters)
+    public AssemblyDefinition? Resolve(AssemblyNameReference name, ReaderParameters? parameters)
     {
-        if (assemblyDefinitionCache.TryGetValue(assemblyNameReference.Name, out var assembly))
+        if (cache.TryGetValue(name.Name, out var assembly))
         {
             return assembly;
         }
@@ -50,7 +55,7 @@ public class AssemblyResolver : IAssemblyResolver
 
     public void Dispose()
     {
-        foreach (var value in assemblyDefinitionCache.Values)
+        foreach (var value in cache.Values)
         {
             value.Dispose();
         }

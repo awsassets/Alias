@@ -6,7 +6,8 @@ public class ModuleReaderTests
     public void WithSymbols()
     {
         var assemblyPath = Path.Combine(Environment.CurrentDirectory, "DummyAssembly.dll");
-        var result = ModuleReaderWriter.Read(assemblyPath, new AssemblyResolver());
+        using var resolver = new AssemblyResolver(Enumerable.Empty<string>());
+        var result = ModuleReaderWriter.Read(assemblyPath, resolver);
         Assert.NotNull(result.module);
         Assert.True(result.hasSymbols);
     }
@@ -15,7 +16,9 @@ public class ModuleReaderTests
     public void NoSymbols()
     {
         var assemblyPath = Path.Combine(Environment.CurrentDirectory, "AssemblyWithNoSymbols.dll");
-        var result = ModuleReaderWriter.Read(assemblyPath, new AssemblyResolver());
+        using var resolver = new AssemblyResolver(Enumerable.Empty<string>());
+        var result = ModuleReaderWriter.Read(assemblyPath, resolver);
+
         Assert.NotNull(result.module);
         Assert.False(result.hasSymbols);
     }

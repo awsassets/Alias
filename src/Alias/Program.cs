@@ -16,11 +16,11 @@ public static class Program
         return 0;
     }
 
-    public static void Inner(string targetDirectory, IEnumerable<string> assemblyNamesToAliases, IEnumerable<string> references, string? keyFile)
+    public static void Inner(string directory, IEnumerable<string> assemblyNamesToAliases, IEnumerable<string> references, string? keyFile)
     {
-        if (!Directory.Exists(targetDirectory))
+        if (!Directory.Exists(directory))
         {
-            throw new ErrorException($"Target directory does not exist: {targetDirectory}");
+            throw new ErrorException($"Target directory does not exist: {directory}");
         }
 
         StrongNameKeyPair? keyPair = null;
@@ -33,7 +33,7 @@ public static class Program
             publicKey = keyPair.PublicKey;
         }
 
-        var allFiles = Directory.GetFiles(targetDirectory, "*.dll").ToList();
+        var allFiles = Directory.GetFiles(directory, "*.dll").ToList();
 
         var assembliesToPatch = allFiles
             .Select(x => new FileAssembly(Path.GetFileNameWithoutExtension(x), x))
@@ -67,14 +67,14 @@ public static class Program
                 var item = assembliesToPatch.SingleOrDefault(x => x.Name == assemblyToAlias);
                 if (item == null)
                 {
-                    throw new ErrorException($"Could not find {assemblyToAlias} in {targetDirectory}.");
+                    throw new ErrorException($"Could not find {assemblyToAlias} in {directory}.");
                 }
 
                 ProcessItem(assembliesToPatch, item, assembliesToAlias);
             }
         }
 
-        using var resolver = new AssemblyResolver();
+        using var resolver = new AssemblyResolver(references);
         {
             foreach (var assembly in assembliesToAlias)
             {
