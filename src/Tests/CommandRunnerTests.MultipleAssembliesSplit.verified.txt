@@ -1,1 +1,12 @@
-﻿
+﻿{
+  errors: [
+    {
+      NameInfo: {
+        ShortName: a,
+        LongName: assemblies-to-alias,
+        NameText: a, assemblies-to-alias
+      },
+      Tag: RepeatedOptionError
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 ﻿{
   errors: [],
-  directory: {CurrentDirectory}\directory,
+  directory: {CurrentDirectory},
   key: {CurrentDirectory}\test.snk,
   assembliesToAlias: [
     assembly

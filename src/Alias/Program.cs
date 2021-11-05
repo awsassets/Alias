@@ -16,7 +16,7 @@ public static class Program
         return 0;
     }
 
-    public static void Inner(string targetDirectory, IEnumerable<string> assemblyNamesToAliases, string? keyFile)
+    public static void Inner(string targetDirectory, IEnumerable<string> assemblyNamesToAliases, IEnumerable<string> references, string? keyFile)
     {
         if (!Directory.Exists(targetDirectory))
         {
@@ -27,11 +27,6 @@ public static class Program
         var publicKey = Array.Empty<byte>();
         if (keyFile != null)
         {
-            if (!File.Exists(keyFile))
-            {
-                throw new ErrorException($"KeyFile directory does not exist: {keyFile}");
-            }
-
             var fileBytes = File.ReadAllBytes(keyFile);
 
             keyPair = new(fileBytes);

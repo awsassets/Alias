@@ -15,7 +15,41 @@ public class CommandRunnerTests
     [Fact]
     public Task All()
     {
-        var result = Parse("--target-directory directory --key theKey --assemblies-to-alias assembly");
+        var result = Parse("--target-directory directory --key test.snk --assemblies-to-alias assembly");
+        return Verifier.Verify(result);
+    }
+
+    [Fact]
+    public Task KeyRelative()
+    {
+        var result = Parse("--key test.snk --assemblies-to-alias assembly");
+        return Verifier.Verify(result);
+    }
+    [Fact]
+    public Task KeyFull()
+    {
+        var result = Parse($"--key {Environment.CurrentDirectory}{Path.DirectorySeparatorChar}test.snk --assemblies-to-alias assembly");
+        return Verifier.Verify(result);
+    }
+
+    [Fact]
+    public Task ReferenceFile()
+    {
+        var result = Parse("--assemblies-to-alias assembly --reference-file referenceFile");
+        return Verifier.Verify(result);
+    }
+
+    [Fact]
+    public Task References()
+    {
+        var result = Parse("--assemblies-to-alias assembly --references reference1");
+        return Verifier.Verify(result);
+    }
+
+    [Fact]
+    public Task ReferencesMultiple()
+    {
+        var result = Parse("--assemblies-to-alias assembly --references reference1;reference2");
         return Verifier.Verify(result);
     }
 
@@ -45,16 +79,18 @@ public class CommandRunnerTests
         string? directory = null;
         string? key = null;
         IEnumerable<string>? assembliesToAlias = null;
+        IEnumerable<string>? references = null;
         var result = CommandRunner.RunCommand(
-            (_targetDirectory, _assembliesToAlias, _key) =>
+            (_targetDirectory, _assembliesToAlias, _references, _key) =>
             {
                 directory = _targetDirectory;
                 key = _key;
                 assembliesToAlias = _assembliesToAlias;
+                references = _references;
             },
             input.Split(' '));
-        return new(result, directory, key, assembliesToAlias);
+        return new(result, directory, key, assembliesToAlias, references);
     }
 
-    public record Result(IEnumerable<Error> errors, string? directory, string? key, IEnumerable<string>? assembliesToAlias);
+    public record Result(IEnumerable<Error> errors, string? directory, string? key, IEnumerable<string>? assembliesToAlias, IEnumerable<string>? references);
 }
