@@ -37,7 +37,7 @@ public class CommandRunnerTests
     {
         string? directory = null;
         string? key = null;
-        string? assembliesToAlias = null;
+        IEnumerable<string>? assembliesToAlias = null;
         var result = CommandRunner.RunCommand(
             (_targetDirectory, _assembliesToAlias, _key) =>
             {
@@ -49,5 +49,5 @@ public class CommandRunnerTests
         return new(result, directory, key, assembliesToAlias);
     }
 
-    public record Result(IEnumerable<Error> errors, string? directory, string? key, string? assembliesToAlias);
+    public record Result(IEnumerable<Error> errors, string? directory, string? key, IEnumerable<string>? assembliesToAlias);
 }

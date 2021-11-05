@@ -6,16 +6,7 @@ public static class Program
 {
     static int Main(string[] args)
     {
-        var errors = CommandRunner.RunCommand(
-            (targetDirectory, assemblyNamesToAliases, keyFile) =>
-            {
-                Console.WriteLine($"TargetDirectory: {targetDirectory}");
-                Console.WriteLine($"AssembliesToAlias: {assemblyNamesToAliases}");
-                Console.WriteLine($"KeyFile: {keyFile}");
-
-                Inner(targetDirectory, assemblyNamesToAliases.Split(";"), keyFile);
-            },
-            args);
+        var errors = CommandRunner.RunCommand(Inner, args);
 
         if (errors.Any())
         {

@@ -8,12 +8,20 @@ public static class CommandRunner
 
         if (arguments is Parsed<Options> parsed)
         {
-            var parsedValue = parsed.Value;
-            var targetDirectory = FindTargetDirectory(parsedValue.TargetDirectory);
-            invoke(targetDirectory, parsedValue.AssembliesToAlias, parsedValue.Key);
+            var options = parsed.Value;
+            var targetDirectory = FindTargetDirectory(options.TargetDirectory);
+            Console.WriteLine($"TargetDirectory: {targetDirectory}");
+            Console.WriteLine($"KeyFile: {options.Key}");
+            Console.WriteLine($"AssembliesToAlias: {options.AssembliesToAlias}");
+            foreach (var assemblyToAlias in options.AssembliesToAlias)
+            {
+                Console.WriteLine($" * {assemblyToAlias}");
+            }
+
+            invoke(targetDirectory, options.AssembliesToAlias, options.Key);
             return Enumerable.Empty<Error>();
         }
-        
+
         return ((NotParsed<Options>) arguments).Errors;
     }
 
