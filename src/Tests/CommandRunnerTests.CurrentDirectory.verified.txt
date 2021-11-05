@@ -1,0 +1,5 @@
+﻿{
+  errors: [],
+  directory: {CurrentDirectory},
+  assembliesToAlias: assembly
+}

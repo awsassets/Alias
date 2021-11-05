@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "PackageUpdate": {
+    "Alias": {
       "commandName": "Project",
       "commandLineArgs": "--target-directory D:\\Code\\sentry\\sentry-unity\\package-dev\\Runtime --assemblies Microsoft*;System* "
     }

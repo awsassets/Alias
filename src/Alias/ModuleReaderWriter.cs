@@ -3,8 +3,6 @@ using Mono.Cecil.Cil;
 
 using StrongNameKeyPair = Mono.Cecil.StrongNameKeyPair;
 
-namespace Alias;
-
 public static class ModuleReaderWriter
 {
     public static (ModuleDefinition module, bool hasSymbols) Read(string file, IAssemblyResolver resolver)

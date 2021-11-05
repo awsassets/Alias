@@ -1,0 +1,6 @@
+﻿{
+  errors: [],
+  directory: {CurrentDirectory}\directory,
+  key: theKey,
+  assembliesToAlias: assembly
+}

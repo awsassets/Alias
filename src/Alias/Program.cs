@@ -4,9 +4,9 @@ using StrongNameKeyPair = Mono.Cecil.StrongNameKeyPair;
 
 public static class Program
 {
-    static void Main(string[] args)
+    static int Main(string[] args)
     {
-        CommandRunner.RunCommand(
+        var errors = CommandRunner.RunCommand(
             (targetDirectory, assemblyNamesToAliases, keyFile) =>
             {
                 Console.WriteLine($"TargetDirectory: {targetDirectory}");
@@ -14,15 +14,22 @@ public static class Program
                 Console.WriteLine($"KeyFile: {keyFile}");
 
                 Inner(targetDirectory, assemblyNamesToAliases.Split(";"), keyFile);
-            }, 
+            },
             args);
+
+        if (errors.Any())
+        {
+            return 1;
+        }
+
+        return 0;
     }
 
     public static void Inner(string targetDirectory, IEnumerable<string> assemblyNamesToAliases, string? keyFile)
     {
         if (!Directory.Exists(targetDirectory))
         {
-            throw new Error($"Target directory does not exist: {targetDirectory}");
+            throw new ErrorException($"Target directory does not exist: {targetDirectory}");
         }
 
         StrongNameKeyPair? keyPair = null;
@@ -31,7 +38,7 @@ public static class Program
         {
             if (!File.Exists(keyFile))
             {
-                throw new Error($"KeyFile directory does not exist: {keyFile}");
+                throw new ErrorException($"KeyFile directory does not exist: {keyFile}");
             }
 
             var fileBytes = File.ReadAllBytes(keyFile);
@@ -52,7 +59,7 @@ public static class Program
         {
             if (string.IsNullOrWhiteSpace(assemblyToAlias))
             {
-                throw new Error("Empty string in assembliesToAliasString");
+                throw new ErrorException("Empty string in assembliesToAliasString");
             }
 
             static void ProcessItem(List<FileAssembly> fileAssemblies, FileAssembly item, List<AssemblyAlias> assemblyAliases)
@@ -74,7 +81,7 @@ public static class Program
                 var item = assembliesToPatch.SingleOrDefault(x => x.Name == assemblyToAlias);
                 if (item == null)
                 {
-                    throw new Error($"Could not find {assemblyToAlias} in {targetDirectory}.");
+                    throw new ErrorException($"Could not find {assemblyToAlias} in {targetDirectory}.");
                 }
 
                 ProcessItem(assembliesToPatch, item, assembliesToAlias);
@@ -85,15 +92,15 @@ public static class Program
         {
             foreach (var assembly in assembliesToAlias)
             {
-                var assemblyToPath = assembly.ToPath;
-                File.Delete(assemblyToPath);
-                var (module, hasSymbols) = ModuleReaderWriter.Read(assembly.FromPath, resolver);
+                var assemblyTargetPath = assembly.TargetPath;
+                File.Delete(assemblyTargetPath);
+                var (module, hasSymbols) = ModuleReaderWriter.Read(assembly.SourcePath, resolver);
 
                 var name = module.Assembly.Name;
                 name.Name += "_Alias";
                 FixKey(keyPair, name);
                 Redirect(module, assembliesToAlias, publicKey);
-                ModuleReaderWriter.Write(keyPair, hasSymbols, module, assemblyToPath);
+                ModuleReaderWriter.Write(keyPair, hasSymbols, module, assemblyTargetPath);
                 module.Dispose();
             }
 
@@ -110,7 +117,7 @@ public static class Program
         }
         foreach (var assembly in assembliesToAlias)
         {
-            File.Delete(assembly.FromPath);
+            File.Delete(assembly.SourcePath);
         }
     }
 
@@ -133,10 +140,10 @@ public static class Program
         var assemblyReferences = targetModule.AssemblyReferences;
         foreach (var alias in aliases)
         {
-            var toChange = assemblyReferences.SingleOrDefault(x => x.Name == alias.FromName);
+            var toChange = assemblyReferences.SingleOrDefault(x => x.Name == alias.SourceName);
             if (toChange != null)
             {
-                toChange.Name = alias.ToName;
+                toChange.Name = alias.TargetName;
                 toChange.PublicKey = publicKey;
             }
         }

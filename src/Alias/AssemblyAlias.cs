@@ -1,5 +1,1 @@
-﻿
-
-namespace Alias;
-
-public record AssemblyAlias(string FromName, string FromPath, string ToName, string ToPath);
+﻿public record AssemblyAlias(string SourceName, string SourcePath, string TargetName, string TargetPath);

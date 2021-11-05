@@ -1,5 +1,4 @@
-﻿using Alias;
-using Mono.Cecil;
+﻿using Mono.Cecil;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
