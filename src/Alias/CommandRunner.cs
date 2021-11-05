@@ -6,23 +6,25 @@ public static class CommandRunner
     {
         var arguments = Parser.Default.ParseArguments<Options>(args);
 
-        if (arguments is Parsed<Options> parsed)
+        if (arguments is NotParsed<Options>  errors)
         {
-            var options = parsed.Value;
-            var targetDirectory = FindTargetDirectory(options.TargetDirectory);
-            Console.WriteLine($"TargetDirectory: {targetDirectory}");
-            Console.WriteLine($"KeyFile: {options.Key}");
-            Console.WriteLine($"AssembliesToAlias: {options.AssembliesToAlias}");
-            foreach (var assemblyToAlias in options.AssembliesToAlias)
-            {
-                Console.WriteLine($" * {assemblyToAlias}");
-            }
-
-            invoke(targetDirectory, options.AssembliesToAlias, options.Key);
-            return Enumerable.Empty<Error>();
+            return errors.Errors;
         }
 
-        return ((NotParsed<Options>) arguments).Errors;
+        var parsed = (Parsed<Options>)arguments;
+
+        var options = parsed.Value;
+        var targetDirectory = FindTargetDirectory(options.TargetDirectory);
+        Console.WriteLine($"TargetDirectory: {targetDirectory}");
+        Console.WriteLine($"KeyFile: {options.Key}");
+        Console.WriteLine($"AssembliesToAlias: {options.AssembliesToAlias}");
+        foreach (var assemblyToAlias in options.AssembliesToAlias)
+        {
+            Console.WriteLine($" * {assemblyToAlias}");
+        }
+
+        invoke(targetDirectory, options.AssembliesToAlias, options.Key);
+        return Enumerable.Empty<Error>();
     }
 
     static string FindTargetDirectory(string? targetDirectory)

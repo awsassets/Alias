@@ -8,32 +8,39 @@ public class CommandRunnerTests
     [Fact]
     public Task MissingAssembliesToAlias()
     {
-        var result = Parse("--target-directory", "directory");
+        var result = Parse("--target-directory directory");
         return Verifier.Verify(result);
     }
 
     [Fact]
     public Task All()
     {
-        var result = Parse("--target-directory", "directory","--key", "theKey", "--assemblies-to-alias", "assembly");
+        var result = Parse("--target-directory directory --key theKey --assemblies-to-alias assembly");
         return Verifier.Verify(result);
     }
 
     [Fact]
     public Task CurrentDirectory()
     {
-        var result = Parse("--assemblies-to-alias", "assembly");
+        var result = Parse("--assemblies-to-alias assembly");
         return Verifier.Verify(result);
     }
 
     [Fact]
     public Task MultipleAssemblies()
     {
-        var result = Parse("--assemblies-to-alias", "assembly1;assembly2");
+        var result = Parse("--assemblies-to-alias assembly1;assembly2");
         return Verifier.Verify(result);
     }
 
-    static Result Parse(params string[] input)
+    //[Fact]
+    //public Task MultipleAssembliesSplit()
+    //{
+    //    var result = Parse("--assemblies-to-alias", "assembly2", "--assemblies-to-alias", "assembly2");
+    //    return Verifier.Verify(result);
+    //}
+
+    static Result Parse(string input)
     {
         string? directory = null;
         string? key = null;
@@ -45,7 +52,7 @@ public class CommandRunnerTests
                 key = _key;
                 assembliesToAlias = _assembliesToAlias;
             },
-            input);
+            input.Split(' '));
         return new(result, directory, key, assembliesToAlias);
     }
 
